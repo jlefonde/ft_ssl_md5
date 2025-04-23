@@ -6,8 +6,6 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-# define MD5_BLOCK_SIZE 512
-# define MD5_BLOCK_SIZE_BYTES MD5_BLOCK_SIZE / 8
 # define ROTLEFT(X, N) (((X) << (N)) | ((X) >> (32 - (N))))
 # define F(X, Y, Z) ((X & Y) | (~X & Z))
 # define G(X, Y, Z) ((X & Z) | (Y & ~Z))
@@ -32,12 +30,12 @@ static const uint32_t S[4][4] = {
     {6, 10, 15, 21}
 };
 
-size_t get_padding_zeros(size_t msg_size)
+int get_padding_zeros(ssize_t msg_size)
 {
-    size_t res = (msg_size + 1) % MD5_BLOCK_SIZE;
+    int res = (msg_size * 8 + 1) % 512;
     if (res <= 448)
         return 448 - res;
-    return MD5_BLOCK_SIZE - res + 448;
+    return 512 - res + 448;
 }
 
 uint32_t ft_combine(uint32_t A, uint32_t B, uint32_t C, uint32_t D, uint32_t w[16], int i)
@@ -109,17 +107,31 @@ void ft_md5(char **argv)
     int fd = open(argv[1], O_RDONLY);
     if (fd == -1)
         exit(1);
+    
+    uint8_t buffer[64];
+    ssize_t total_msg_size = 0;
+    ssize_t bytes_read = 0;
+    while ((bytes_read = read(fd, buffer, 64)) > 0)
+    {
+        total_msg_size += bytes_read;
 
-    uint8_t buffer[MD5_BLOCK_SIZE_BYTES];
-    ssize_t bytes_read = read(fd, buffer, MD5_BLOCK_SIZE_BYTES);
-    buffer[bytes_read] = 0;
-    printf("%s\n", buffer);
-    ft_process_block(buffer, digest);
+        if (bytes_read < 64)
+        {
+            printf("%lu<64\n", total_msg_size);
+            printf("%d\n", get_padding_zeros(total_msg_size));
+        }
+
+        buffer[bytes_read] = 0;
+        printf("%s\n", buffer);
+        ft_process_block(buffer, digest);
+    }
     for (int i = 0; i < 4; ++i)
-        printf("%02x%02x%02x%02x",
+        printf("%x%x%x%x",
             digest[i] & 0xFF,
             (digest[i] >> 8) & 0xFF,
             (digest[i] >> 16) & 0xFF,
             (digest[i] >> 24) & 0xFF);
+
     printf("\n");
+    close(fd);
 }
