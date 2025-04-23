@@ -6,6 +6,6 @@
 #include <stdint.h>
 #include <string.h>
 
-void ft_md5(char *msg, size_t msg_size);
+void ft_md5(char **argv);
 
 #endif

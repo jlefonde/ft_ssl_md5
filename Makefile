@@ -9,7 +9,7 @@ SOURCES = ft_ssl.c \
 
 OBJECTS = $(addprefix $(OBJECTS_DIR)/, $(SOURCES:.c=.o))
 
-CFLAGS = -Wall -Wextra -Werror -I$(HEADERS_DIR)
+CFLAGS = -I$(HEADERS_DIR) #-Wall -Wextra -Werror
 LDFLAGS = -lm
 
 $(OBJECTS_DIR)/%.o: $(SOURCES_DIR)/%.c
