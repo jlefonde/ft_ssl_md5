@@ -111,10 +111,10 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
         w[i] = msg[j] | msg[j + 1] << 8 | msg[j + 2] << 16 | msg[j + 3] << 24;
     }
 
-    uint32_t AA = digest[0];
-    uint32_t BB = digest[1];
-    uint32_t CC = digest[2];
-    uint32_t DD = digest[3];
+    uint32_t A = digest[0];
+    uint32_t B = digest[1];
+    uint32_t C = digest[2];
+    uint32_t D = digest[3];
 
     for (int i = 0; i < 64; ++i)
     {
@@ -125,10 +125,10 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
         digest[1] = F;
     }
 
-    digest[0] = digest[0] + AA;
-    digest[1] = digest[1] + BB;
-    digest[2] = digest[2] + CC;
-    digest[3] = digest[3] + DD;
+    digest[0] = digest[0] + A;
+    digest[1] = digest[1] + B;
+    digest[2] = digest[2] + C;
+    digest[3] = digest[3] + D;
 }
 
 void ft_md5(char **argv)
@@ -153,9 +153,7 @@ void ft_md5(char **argv)
 
         if (bytes_read < 64)
             break;
-
         buffer[bytes_read] = 0;
-        printf("%s\n", buffer);
         ft_process_block(buffer, digest);
     }
     // ft_md5_final
@@ -167,19 +165,13 @@ void ft_md5(char **argv)
         for (; i <= (padding_zeros - 7) / 8; ++i)
             buffer[i] = 0x00;
         uint64_t total_msg_size_bits = total_msg_size * 8;
-        buffer[i++] = total_msg_size_bits & 0xFF;
-        buffer[i++] = (total_msg_size_bits >> 8) & 0xFF;
-        buffer[i++] = (total_msg_size_bits >> 16) & 0xFF;
-        buffer[i++] = (total_msg_size_bits >> 24) & 0xFF;
-        buffer[i++] = (total_msg_size_bits >> 32) & 0xFF;
-        buffer[i++] = (total_msg_size_bits >> 40) & 0xFF;
-        buffer[i++] = (total_msg_size_bits >> 48) & 0xFF;
-        buffer[i++] = (total_msg_size_bits >> 56) & 0xFF;
+        for (int j = 0; j < 8; j++)
+            buffer[i++] = (total_msg_size_bits >> j * 8) & 0xFF;
         ft_process_block(buffer, digest);
     }
 
     for (int i = 0; i < 4; ++i)
-        printf("%x%x%x%x",
+        printf("%02x%02x%02x%02x",
             digest[i] & 0xFF,
             (digest[i] >> 8) & 0xFF,
             (digest[i] >> 16) & 0xFF,
