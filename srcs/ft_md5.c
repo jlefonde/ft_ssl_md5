@@ -6,11 +6,61 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-# define ROTLEFT(X, N) (((X) << (N)) | ((X) >> (32 - (N))))
-# define F(X, Y, Z) ((X & Y) | (~X & Z))
-# define G(X, Y, Z) ((X & Z) | (Y & ~Z))
-# define H(X, Y, Z) ((X) ^ (Y) ^ (Z))
-# define I(X, Y, Z) ((Y) ^ ((X) | ~(Z)))
+static uint32_t ft_rotate_left(const uint32_t X, const uint32_t N)
+{
+    return ((X << N) | (X >> (32 - N)));
+}
+
+static uint32_t F(const uint32_t X, const uint32_t Y, const uint32_t Z)
+{
+    return ((X & Y) | (~X & Z));
+}
+
+static uint32_t G(const uint32_t X, const uint32_t Y, const uint32_t Z)
+{
+    return ((X & Z) | (Y & ~Z));
+}
+
+static uint32_t H(const uint32_t X, const uint32_t Y, const uint32_t Z)
+{
+    return (X ^ Y ^ Z);
+}
+
+static uint32_t I(const uint32_t X, const uint32_t Y, const uint32_t Z)
+{
+    return (Y ^ (X | ~Z));
+}
+
+static int ft_get_word_index_round_1(const int i)
+{
+    return (i);
+}
+
+static int ft_get_word_index_round_2(const int i)
+{
+    return ((5 * i + 1) % 16);
+}
+
+static int ft_get_word_index_round_3(const int i)
+{
+    return ((3 * i + 5) % 16);
+}
+
+static int ft_get_word_index_round_4(const int i)
+{
+    return ((7 * i) % 16);
+}
+
+static uint32_t (*ft_md5_round[4])(const uint32_t X, const uint32_t Y, const uint32_t Z) = {
+    F, G, H, I
+};
+
+static int (*ft_get_word_index[4])(const int i) = {
+    ft_get_word_index_round_1,
+    ft_get_word_index_round_2,
+    ft_get_word_index_round_3,
+    ft_get_word_index_round_4
+};
 
 static const uint32_t T[64] = { 
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -30,7 +80,7 @@ static const uint32_t S[4][4] = {
     {6, 10, 15, 21}
 };
 
-int get_padding_zeros(ssize_t msg_size)
+int ft_get_padding_zeros(ssize_t msg_size)
 {
     int res = (msg_size * 8 + 1) % 512;
     if (res <= 448)
@@ -38,31 +88,18 @@ int get_padding_zeros(ssize_t msg_size)
     return 512 - res + 448;
 }
 
-uint32_t ft_combine(uint32_t A, uint32_t B, uint32_t C, uint32_t D, uint32_t w[16], int i)
+uint32_t ft_md5_rounds(uint32_t A, uint32_t B, uint32_t C, uint32_t D, uint32_t w[16])
 {
-    int j = 0;
-    uint32_t res = 0;
-    if (i >= 0 && i <= 15)
+    uint32_t round_res = 0;
+    uint32_t combine = 0;
+
+    for (int i = 0; i < 64; ++i)
     {
-        res = F(B, C, D);
-        j = i;
+        int j = ft_get_word_index[((i / 16) % 4)](i);
+        round_res = ft_md5_round[((i / 16) % 4)](B, C, D);
+        combine = B + ft_rotate_left((A + round_res + w[j] + T[i]), S[(i / 16)][(i % 4)]);
     }
-    else if (i >= 16 && i <= 31)
-    {
-        res = G(B, C, D);
-        j = (5 * i + 1) % 16;
-    }
-    else if (i >= 32 && i <= 47)
-    {
-        res = H(B, C, D);
-        j = (3 * i + 5) % 16;
-    }
-    else
-    {
-        res = I(B, C, D);
-        j = (7 * i) % 16;
-    }
-    return (B + ROTLEFT((A + res + w[j] + T[i]), S[(i / 16)][(i % 4)]));
+    return (combine);
 }
 
 void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
@@ -81,18 +118,10 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
     uint32_t C = digest[2];
     uint32_t D = digest[3];
 
-    for (int i = 0; i < 64; ++i)
-    {
-        digest[0] = D;
-        digest[1] = ft_combine(A, B, C, D, w, i);
-        digest[2] = B;
-        digest[3] = C;
-    }
-
-    digest[0] = digest[0] + A;
-    digest[1] = digest[1] + B;
-    digest[2] = digest[2] + C;
-    digest[3] = digest[3] + D;
+    digest[0] = D + A;
+    digest[1] = ft_md5_rounds(A, B, C, D, w) + B;
+    digest[2] = B + C;
+    digest[3] = C + D;
 }
 
 void ft_md5(char **argv)
@@ -118,7 +147,7 @@ void ft_md5(char **argv)
         if (bytes_read < 64)
         {
             printf("%lu<64\n", total_msg_size);
-            printf("%d\n", get_padding_zeros(total_msg_size));
+            printf("%d\n", ft_get_padding_zeros(total_msg_size));
         }
 
         buffer[bytes_read] = 0;
