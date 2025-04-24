@@ -31,35 +31,35 @@ static uint32_t I(const uint32_t X, const uint32_t Y, const uint32_t Z)
     return (Y ^ (X | ~Z));
 }
 
-static int ft_get_word_index_round_1(const int i)
+static uint32_t ft_md5_round_1(const uint32_t B, const uint32_t C, const uint32_t D, const int i, int* j)
 {
-    return (i);
+    *j = i;
+    return F(B, C, D);
 }
 
-static int ft_get_word_index_round_2(const int i)
+static uint32_t ft_md5_round_2(const uint32_t B, const uint32_t C, const uint32_t D, const int i, int* j)
 {
-    return ((5 * i + 1) % 16);
+    *j = ((5 * i + 1) % 16);
+    return G(B, C, D);
 }
 
-static int ft_get_word_index_round_3(const int i)
+static uint32_t ft_md5_round_3(const uint32_t B, const uint32_t C, const uint32_t D, const int i, int* j)
 {
-    return ((3 * i + 5) % 16);
+    *j = ((3 * i + 5) % 16);
+    return H(B, C, D);
 }
 
-static int ft_get_word_index_round_4(const int i)
+static uint32_t ft_md5_round_4(const uint32_t B, const uint32_t C, const uint32_t D, const int i, int* j)
 {
-    return ((7 * i) % 16);
+    *j = ((7 * i) % 16);
+    return I(B, C, D);
 }
 
-static uint32_t (*ft_md5_round[4])(const uint32_t X, const uint32_t Y, const uint32_t Z) = {
-    F, G, H, I
-};
-
-static int (*ft_get_word_index[4])(const int i) = {
-    ft_get_word_index_round_1,
-    ft_get_word_index_round_2,
-    ft_get_word_index_round_3,
-    ft_get_word_index_round_4
+static uint32_t (*ft_md5_round[4])(const uint32_t B, const uint32_t C, const uint32_t D, const int i, int* j) = {
+    ft_md5_round_1,
+    ft_md5_round_2,
+    ft_md5_round_3,
+    ft_md5_round_4
 };
 
 static const uint32_t T[64] = { 
@@ -82,23 +82,21 @@ static const uint32_t S[4][4] = {
 
 int ft_get_padding_zeros(ssize_t msg_size)
 {
-    int res = (msg_size * 8 + 1) % 512;
-    if (res <= 448)
-        return 448 - res;
-    return 512 - res + 448;
+    int remaining_size = (msg_size * 8 + 1) % 512;
+    if (remaining_size <= 448)
+        return (448 - remaining_size);
+    return (512 - remaining_size + 448);
 }
 
-uint32_t ft_md5_rounds(uint32_t A, uint32_t B, uint32_t C, uint32_t D, uint32_t w[16])
+uint32_t ft_md5_rounds(uint32_t A, uint32_t B, uint32_t C, uint32_t D, uint32_t w[16], int i)
 {
     uint32_t round_res = 0;
     uint32_t combine = 0;
 
-    for (int i = 0; i < 64; ++i)
-    {
-        int j = ft_get_word_index[((i / 16) % 4)](i);
-        round_res = ft_md5_round[((i / 16) % 4)](B, C, D);
-        combine = B + ft_rotate_left((A + round_res + w[j] + T[i]), S[(i / 16)][(i % 4)]);
-    }
+    int j = 0;
+    round_res = ft_md5_round[((i / 16) % 4)](B, C, D, i, &j);
+    combine = B + ft_rotate_left((A + round_res + w[j] + T[i]), S[(i / 16)][(i % 4)]);
+
     return (combine);
 }
 
@@ -113,15 +111,24 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
         w[i] = msg[j] | msg[j + 1] << 8 | msg[j + 2] << 16 | msg[j + 3] << 24;
     }
 
-    uint32_t A = digest[0];
-    uint32_t B = digest[1];
-    uint32_t C = digest[2];
-    uint32_t D = digest[3];
+    uint32_t AA = digest[0];
+    uint32_t BB = digest[1];
+    uint32_t CC = digest[2];
+    uint32_t DD = digest[3];
 
-    digest[0] = D + A;
-    digest[1] = ft_md5_rounds(A, B, C, D, w) + B;
-    digest[2] = B + C;
-    digest[3] = C + D;
+    for (int i = 0; i < 64; ++i)
+    {
+        uint32_t F = ft_md5_rounds(digest[0], digest[1], digest[2], digest[3], w, i);
+        digest[0] = digest[3];
+        digest[3] = digest[2];
+        digest[2] = digest[1];
+        digest[1] = F;
+    }
+
+    digest[0] = digest[0] + AA;
+    digest[1] = digest[1] + BB;
+    digest[2] = digest[2] + CC;
+    digest[3] = digest[3] + DD;
 }
 
 void ft_md5(char **argv)
@@ -145,15 +152,32 @@ void ft_md5(char **argv)
         total_msg_size += bytes_read;
 
         if (bytes_read < 64)
-        {
-            printf("%lu<64\n", total_msg_size);
-            printf("%d\n", ft_get_padding_zeros(total_msg_size));
-        }
+            break;
 
         buffer[bytes_read] = 0;
         printf("%s\n", buffer);
         ft_process_block(buffer, digest);
     }
+    // ft_md5_final
+    int padding_zeros = ft_get_padding_zeros(total_msg_size);
+    if (bytes_read == 0)
+    {
+        int i = 0;
+        buffer[i++] = 0x80;
+        for (; i <= (padding_zeros - 7) / 8; ++i)
+            buffer[i] = 0x00;
+        uint64_t total_msg_size_bits = total_msg_size * 8;
+        buffer[i++] = total_msg_size_bits & 0xFF;
+        buffer[i++] = (total_msg_size_bits >> 8) & 0xFF;
+        buffer[i++] = (total_msg_size_bits >> 16) & 0xFF;
+        buffer[i++] = (total_msg_size_bits >> 24) & 0xFF;
+        buffer[i++] = (total_msg_size_bits >> 32) & 0xFF;
+        buffer[i++] = (total_msg_size_bits >> 40) & 0xFF;
+        buffer[i++] = (total_msg_size_bits >> 48) & 0xFF;
+        buffer[i++] = (total_msg_size_bits >> 56) & 0xFF;
+        ft_process_block(buffer, digest);
+    }
+
     for (int i = 0; i < 4; ++i)
         printf("%x%x%x%x",
             digest[i] & 0xFF,
