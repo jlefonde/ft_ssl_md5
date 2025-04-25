@@ -5,6 +5,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <errno.h>
 
 typedef struct md5_round_s
 {
@@ -13,7 +14,6 @@ typedef struct md5_round_s
     uint32_t C;
     uint32_t D;
     uint32_t w[16];
-    int i;
 }   md5_round_t;
 
 static const uint32_t T[64] = { 
@@ -59,43 +59,43 @@ static uint32_t ft_I(const uint32_t X, const uint32_t Y, const uint32_t Z)
     return (Y ^ (X | ~Z));
 }
 
-static uint32_t ft_process_round(const md5_round_t md5_round, const uint32_t func_result, const int j)
+static uint32_t ft_process_round(const md5_round_t md5_round, const uint32_t func_result, const int i, const int j)
 {
-    uint32_t sum = md5_round.A + func_result + md5_round.w[j] + T[md5_round.i];
-    uint8_t shift = S[(md5_round.i / 16)][(md5_round.i % 4)];
+    uint32_t sum = md5_round.A + func_result + md5_round.w[j] + T[i];
+    uint8_t shift = S[(i / 16)][(i % 4)];
     
     return md5_round.B + ft_rotate_left(sum, shift);
 }
 
-static uint32_t ft_md5_round_1(const md5_round_t md5_round)
+static uint32_t ft_md5_round_1(const md5_round_t md5_round, const int i)
 {
-    int j = md5_round.i;
+    int j = i;
     uint32_t f_res = ft_F(md5_round.B, md5_round.C, md5_round.D);
-    return ft_process_round(md5_round, f_res, j);
+    return ft_process_round(md5_round, f_res, i, j);
 }
 
-static uint32_t ft_md5_round_2(const md5_round_t md5_round)
+static uint32_t ft_md5_round_2(const md5_round_t md5_round, const int i)
 {
-    int j = ((5 * md5_round.i + 1) % 16);
+    int j = ((5 * i + 1) % 16);
     uint32_t g_res = ft_G(md5_round.B, md5_round.C, md5_round.D);
-    return ft_process_round(md5_round, g_res, j);
+    return ft_process_round(md5_round, g_res, i, j);
 }
 
-static uint32_t ft_md5_round_3(const md5_round_t md5_round)
+static uint32_t ft_md5_round_3(const md5_round_t md5_round, const int i)
 {
-    int j = ((3 * md5_round.i + 5) % 16);
+    int j = ((3 * i + 5) % 16);
     uint32_t h_res = ft_H(md5_round.B, md5_round.C, md5_round.D);
-    return ft_process_round(md5_round, h_res, j);
+    return ft_process_round(md5_round, h_res, i, j);
 }
 
-static uint32_t ft_md5_round_4(const md5_round_t md5_round)
+static uint32_t ft_md5_round_4(const md5_round_t md5_round, const int i)
 {
-    int j = ((7 * md5_round.i) % 16);
+    int j = ((7 * i) % 16);
     uint32_t i_res = ft_I(md5_round.B, md5_round.C, md5_round.D);
-    return ft_process_round(md5_round, i_res, j);
+    return ft_process_round(md5_round, i_res, i, j);
 }
 
-static uint32_t (*ft_md5_round[4])(const md5_round_t md5_round) = {
+static uint32_t (*ft_md5_round[4])(const md5_round_t md5_round, const int i) = {
     ft_md5_round_1,
     ft_md5_round_2,
     ft_md5_round_3,
@@ -119,8 +119,7 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
     md5_round.D = digest[3];
     for (int i = 0; i < 64; ++i)
     {
-        md5_round.i = i;
-        uint32_t F = ft_md5_round[(i / 16) % 4](md5_round);
+        uint32_t F = ft_md5_round[(i / 16) % 4](md5_round, i);
         md5_round.A = md5_round.D;
         md5_round.D = md5_round.C;
         md5_round.C = md5_round.B;
@@ -131,6 +130,38 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
     digest[1] = digest[1] + md5_round.B;
     digest[2] = digest[2] + md5_round.C;
     digest[3] = digest[3] + md5_round.D;
+}
+
+void ft_process_final_block(ssize_t msg_size, uint32_t digest[4])
+{
+    uint8_t block[64];
+    int i = 0;
+
+    block[i++] = 0x80;
+    memset(&block[i], 0, 56);
+    memcpy(&block[56], &msg_size, 8);
+    ft_process_block(block, digest);
+}
+
+void ft_md5_final(uint8_t buffer[64], ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+{
+    buffer[bytes_read++] = 0x80;
+
+    if (bytes_read < 56)
+    {
+        memset(&buffer[bytes_read], 0x00, 56 - bytes_read);
+        memcpy(&buffer[56], &msg_size, 8);
+        ft_process_block(buffer, digest);
+    }
+    else
+    {
+        if (bytes_read > 0)
+        {
+           memset(&buffer[bytes_read], 0x00, 64 - bytes_read);
+           ft_process_block(buffer, digest);
+        }
+        ft_process_final_block(msg_size, digest);
+    }
 }
 
 void ft_md5(char **argv)
@@ -145,44 +176,28 @@ void ft_md5(char **argv)
     int fd = open(argv[1], O_RDONLY);
     if (fd == -1)
         exit(1);
-    
+
     uint8_t buffer[64];
     ssize_t total_msg_size = 0;
     ssize_t bytes_read = 0;
-    int completed = 0;
-    while ((bytes_read = read(fd, buffer, 64)) > 0)
+    while ((bytes_read = read(fd, buffer, 64)) >= 0)
     {
-        total_msg_size += bytes_read * 8;
+        total_msg_size += bytes_read;
 
         if (bytes_read == 64)
             ft_process_block(buffer, digest);
         else
         {
-            buffer[bytes_read] = 0x80;
-            ++bytes_read;
-
-            if (bytes_read < 56)
-            {
-                memset(&buffer[bytes_read], 0x00, 56 - bytes_read);
-                memcpy(&buffer[56], &total_msg_size, 8);
-                ft_process_block(buffer, digest);
-                completed = 1;
-            }
-            else
-            {
-                memset(&buffer[bytes_read], 0x00, 64 - bytes_read);
-                ft_process_block(buffer, digest);
-            }
+            ft_md5_final(buffer, bytes_read, total_msg_size * 8, digest);
+            break;
         }
     }
-    // ft_md5_final
-    if (!completed)
+
+    if (bytes_read == -1)
     {
-        buffer[bytes_read] = 0x80;
-        bytes_read++;
-        memset(&buffer[bytes_read], 0, 56);
-        memcpy(&buffer[56], &total_msg_size, 8);
-        ft_process_block(buffer, digest);
+        printf("Error: %s\n", strerror(errno));
+        // TODO; just skip to exit
+        exit(1);
     }
 
     for (int i = 0; i < 4; ++i)
