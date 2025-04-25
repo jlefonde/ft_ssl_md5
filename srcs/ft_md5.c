@@ -116,35 +116,37 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
     digest[3] = digest[3] + md5_round.D;
 }
 
-void ft_process_final_block(ssize_t msg_size, uint32_t digest[4])
+void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
 {
     uint8_t block[64];
     int i = 0;
 
-    block[i++] = 0x80;
-    memset(&block[i], 0, 56);
+    if (!bytes_read)
+        block[i++] = 0x80;
+
+    memset(&block[i], 0, 56 - i);
     memcpy(&block[56], &msg_size, 8);
     ft_process_block(block, digest);
 }
 
-void ft_md5_final(uint8_t buffer[64], ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+void ft_md5_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
 {
-    buffer[bytes_read++] = 0x80;
+    block[bytes_read++] = 0x80;
 
     if (bytes_read < 56)
     {
-        memset(&buffer[bytes_read], 0x00, 56 - bytes_read);
-        memcpy(&buffer[56], &msg_size, 8);
-        ft_process_block(buffer, digest);
+        memset(&block[bytes_read], 0x00, 56 - bytes_read);
+        memcpy(&block[56], &msg_size, 8);
+        ft_process_block(block, digest);
     }
     else
     {
         if (bytes_read > 0)
         {
-           memset(&buffer[bytes_read], 0x00, 64 - bytes_read);
-           ft_process_block(buffer, digest);
+           memset(&block[bytes_read], 0x00, 64 - bytes_read);
+           ft_process_block(block, digest);
         }
-        ft_process_final_block(msg_size, digest);
+        ft_process_final_block(bytes_read, msg_size, digest);
     }
 }
 
@@ -156,7 +158,7 @@ void ft_print_digest(const uint32_t digest[4])
     printf("\n");
 }
 
-int ft_md5_file(char *file, uint32_t digest[4])
+void ft_md5_file(char *file, uint32_t digest[4])
 {
     int fd = 0;
     if (file)
@@ -165,22 +167,22 @@ int ft_md5_file(char *file, uint32_t digest[4])
         if (fd == -1)
         {
             printf("Error: %s\n", strerror(errno));
-            return (1);
+            return ;
         }
     }
 
-    uint8_t buffer[64];
+    uint8_t block[64];
     ssize_t total_msg_size = 0;
     ssize_t bytes_read = 0;
-    while ((bytes_read = read(fd, buffer, 64)) >= 0)
+    while ((bytes_read = read(fd, block, 64)) >= 0)
     {
         total_msg_size += bytes_read;
 
         if (bytes_read == 64)
-            ft_process_block(buffer, digest);
+            ft_process_block(block, digest);
         else
         {
-            ft_md5_final(buffer, bytes_read, total_msg_size * 8, digest);
+            ft_md5_final(block, bytes_read, total_msg_size * 8, digest);
             break;
         }
     }
@@ -191,11 +193,10 @@ int ft_md5_file(char *file, uint32_t digest[4])
     if (bytes_read == -1)
     {
         printf("Error: %s\n", strerror(errno));
-        return (1);
+        return ;
     }
 
     ft_print_digest(digest);
-    return (0);
 }
 
 void ft_md5(char **argv)
