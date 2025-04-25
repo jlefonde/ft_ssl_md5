@@ -148,18 +148,26 @@ void ft_md5_final(uint8_t buffer[64], ssize_t bytes_read, ssize_t msg_size, uint
     }
 }
 
-void ft_md5(char **argv)
+void ft_print_digest(const uint32_t digest[4])
 {
-    uint32_t digest[4] = {
-        0x67452301,
-        0xefcdab89,
-        0x98badcfe,
-        0x10325476
-    };
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+            printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
+    printf("\n");
+}
 
-    int fd = open(argv[1], O_RDONLY);
-    if (fd == -1)
-        exit(1);
+int ft_md5_file(char *file, uint32_t digest[4])
+{
+    int fd = 0;
+    if (file)
+    {
+        fd = open(file, O_RDONLY);
+        if (fd == -1)
+        {
+            printf("Error: %s\n", strerror(errno));
+            return (1);
+        }
+    }
 
     uint8_t buffer[64];
     ssize_t total_msg_size = 0;
@@ -177,20 +185,27 @@ void ft_md5(char **argv)
         }
     }
 
+    if (fd > 2)
+        close(fd);
+
     if (bytes_read == -1)
     {
         printf("Error: %s\n", strerror(errno));
-        // TODO; just skip to exit
-        exit(1);
+        return (1);
     }
 
-    for (int i = 0; i < 4; ++i)
-        printf("%02x%02x%02x%02x",
-            digest[i] & 0xFF,
-            (digest[i] >> 8) & 0xFF,
-            (digest[i] >> 16) & 0xFF,
-            (digest[i] >> 24) & 0xFF);
+    ft_print_digest(digest);
+    return (0);
+}
 
-    printf("\n");
-    close(fd);
+void ft_md5(char **argv)
+{
+    uint32_t digest[4] = {
+        0x67452301,
+        0xefcdab89,
+        0x98badcfe,
+        0x10325476
+    };
+
+    ft_md5_file(argv[1], digest);
 }
