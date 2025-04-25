@@ -1,0 +1,22 @@
+#ifndef FT_MD5_H
+# define FT_MD5_H
+
+# include <stdio.h>
+# include <math.h>
+# include <stdint.h>
+# include <string.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <errno.h>
+
+typedef struct md5_round_s
+{
+    uint32_t A;
+    uint32_t B;
+    uint32_t C;
+    uint32_t D;
+    uint32_t w[16];
+}   md5_round_t;
+
+#endif

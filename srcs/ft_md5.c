@@ -1,20 +1,4 @@
-# include <stdio.h>
-# include <math.h>
-# include <stdint.h>
-# include <string.h>
-# include <fcntl.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include <errno.h>
-
-typedef struct md5_round_s
-{
-    uint32_t A;
-    uint32_t B;
-    uint32_t C;
-    uint32_t D;
-    uint32_t w[16];
-}   md5_round_t;
+# include "ft_md5.h"
 
 static const uint32_t T[64] = { 
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
