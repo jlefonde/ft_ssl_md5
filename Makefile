@@ -10,22 +10,24 @@ SOURCES = ft_ssl.c \
 OBJECTS = $(addprefix $(OBJECTS_DIR)/, $(SOURCES:.c=.o))
 
 CFLAGS = -I$(HEADERS_DIR) #-Wall -Wextra -Werror
-LDFLAGS = -lm
+LDFLAGS = -L./libft -lft -lm
 
-$(OBJECTS_DIR)/%.o: $(SOURCES_DIR)/%.c
-	@mkdir -p $(OBJECTS_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-all: ${NAME}
+all: $(NAME)
 
 $(NAME): $(OBJECTS)
+	make bonus -C ./libft
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
+$(OBJECTS_DIR)/%.o: $(SOURCES_DIR)/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
-	${RM} -rf ${OBJECTS_DIR}
+	@make clean -C ./libft
+	$(RM) -rf $(OBJECTS_DIR)
 
 fclean: clean
-	${RM} -r ${NAME}
+	@make fclean -C ./libft
 
 re: fclean all
 
