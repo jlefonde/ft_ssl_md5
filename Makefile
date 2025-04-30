@@ -23,11 +23,11 @@ $(OBJECTS_DIR)/%.o: $(SOURCES_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	@make clean -C ./libft
+#	@make clean -C ./libft
 	$(RM) -rf $(OBJECTS_DIR)
 
 fclean: clean
-	@make fclean -C ./libft
+#	@make fclean -C ./libft
 
 re: fclean all
 

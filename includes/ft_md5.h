@@ -10,6 +10,8 @@
 # include <stdlib.h>
 # include <errno.h>
 
+# include "ft_ssl.h"
+
 typedef struct md5_round_s
 {
     uint32_t A;
@@ -18,5 +20,9 @@ typedef struct md5_round_s
     uint32_t D;
     uint32_t w[16];
 }   md5_round_t;
+
+typedef struct s_input t_input;
+
+void ft_md5(t_input input);
 
 #endif

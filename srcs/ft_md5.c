@@ -150,7 +150,7 @@ void ft_md5_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint3
     }
 }
 
-void ft_print_digest(const uint32_t digest[4])
+void ft_md5_print(const uint32_t digest[4])
 {
     for (int i = 0; i < 4; ++i)
         for (int j = 0; j < 4; ++j)
@@ -158,8 +158,17 @@ void ft_print_digest(const uint32_t digest[4])
     printf("\n");
 }
 
-void ft_md5_file(char *file, uint32_t digest[4])
+void ft_md5(t_input input)
 {
+    uint32_t digest[4] = {
+        0x67452301,
+        0xefcdab89,
+        0x98badcfe,
+        0x10325476
+    };
+
+    char *file = input.str;
+
     int fd = 0;
     if (file)
     {
@@ -196,17 +205,7 @@ void ft_md5_file(char *file, uint32_t digest[4])
         return ;
     }
 
-    ft_print_digest(digest);
+    ft_md5_print(digest);
 }
 
-void ft_md5(char **argv)
-{
-    uint32_t digest[4] = {
-        0x67452301,
-        0xefcdab89,
-        0x98badcfe,
-        0x10325476
-    };
 
-    ft_md5_file(argv[1], digest);
-}
