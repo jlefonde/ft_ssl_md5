@@ -34,15 +34,14 @@ typedef struct u_context
     		bool quiet_mode;
     		bool stdin_mode;
     	}	digest;
-	} mode;
+	} flags;
 }	t_context;
 
 typedef struct s_command t_command;
 
 typedef struct s_category
 {
-	t_category_type type;
-	char *name;
+	const char *name;
 	t_context (*parse_func)(char **argv);
 	void (*execute_func)(t_command cmd, t_context ctx);
 }	t_category;
