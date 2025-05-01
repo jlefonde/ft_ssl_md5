@@ -34,7 +34,7 @@ void ft_helper()
 
 int main(int argc, char** argv)
 {
-    if (argc != 2)
+    if (argc < 2)
     {
         ft_fprintf(STDERR_FILENO, "usage: ./ft_ssl <command> [flags] [file/string]\n\n");
         ft_helper();
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
         return (1);
     }
 
-    t_context ctx = cmd->category->parse_func(argv);
+    t_context ctx = cmd->category->parse_func(argc, argv);
     cmd->category->execute_func(*cmd, ctx);
 
     return (0);
