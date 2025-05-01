@@ -154,8 +154,23 @@ void ft_md5_print(const uint32_t digest[4])
 {
     for (int i = 0; i < 4; ++i)
         for (int j = 0; j < 4; ++j)
-            printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
-    printf("\n");
+            ft_printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
+}
+
+ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
+{
+    if (input->type == INPUT_FILE)
+        return read(input->fd, buffer, nbytes);
+
+    size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
+    if (!remaining_bytes)
+        return (0);
+
+    size_t to_copy = remaining_bytes < nbytes ? remaining_bytes : nbytes;
+    ft_memcpy(buffer, &input->str[input->str_pos], to_copy);
+    input->str_pos += to_copy;
+
+    return (to_copy);
 }
 
 void ft_md5(t_input *input)
@@ -167,23 +182,10 @@ void ft_md5(t_input *input)
         0x10325476
     };
 
-    char *file = input->str;
-
-    int fd = 0;
-    if (file)
-    {
-        fd = open(file, O_RDONLY);
-        if (fd == -1)
-        {
-            printf("Error: %s\n", strerror(errno));
-            return ;
-        }
-    }
-
     uint8_t block[64];
     ssize_t total_msg_size = 0;
     ssize_t bytes_read = 0;
-    while ((bytes_read = read(fd, block, 64)) >= 0)
+    while ((bytes_read = read_from_input(input, block, 64)) >= 0)
     {
         total_msg_size += bytes_read;
 
@@ -194,15 +196,6 @@ void ft_md5(t_input *input)
             ft_md5_final(block, bytes_read, total_msg_size * 8, digest);
             break ;
         }
-    }
-
-    if (fd > 2)
-        close(fd);
-
-    if (bytes_read == -1)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return ;
     }
 
     ft_md5_print(digest);

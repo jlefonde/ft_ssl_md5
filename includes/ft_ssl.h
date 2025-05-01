@@ -28,6 +28,8 @@ typedef struct s_input
 {
 	t_input_type type;
 	char *str;
+	size_t str_pos;
+	int fd;
 }	t_input;
 
 typedef struct s_context
