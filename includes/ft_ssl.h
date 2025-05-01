@@ -34,7 +34,7 @@ typedef struct u_context
     		bool quiet_mode;
     		bool stdin_mode;
     	}	digest;
-	} flags;
+	} u_flags;
 }	t_context;
 
 typedef struct s_command t_command;

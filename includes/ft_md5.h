@@ -12,14 +12,14 @@
 
 # include "ft_ssl.h"
 
-typedef struct md5_round_s
+typedef struct s_md5_round
 {
     uint32_t A;
     uint32_t B;
     uint32_t C;
     uint32_t D;
     uint32_t w[16];
-}   md5_round_t;
+}   t_md5_round;
 
 typedef struct s_input t_input;
 
