@@ -1,4 +1,4 @@
-# include "ft_md5.h"
+#include "../includes/ft_ssl.h"
 
 static const uint32_t T[64] = {
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -124,8 +124,8 @@ void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_t diges
     if (!bytes_read)
         block[i++] = 0x80;
 
-    memset(&block[i], 0, 56 - i);
-    memcpy(&block[56], &msg_size, 8);
+    ft_memset(&block[i], 0, 56 - i);
+    ft_memcpy(&block[56], &msg_size, 8);
     ft_process_block(block, digest);
 }
 
@@ -135,15 +135,15 @@ void ft_md5_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint3
 
     if (bytes_read < 56)
     {
-        memset(&block[bytes_read], 0x00, 56 - bytes_read);
-        memcpy(&block[56], &msg_size, 8);
+        ft_memset(&block[bytes_read], 0x00, 56 - bytes_read);
+        ft_memcpy(&block[56], &msg_size, 8);
         ft_process_block(block, digest);
     }
     else
     {
         if (bytes_read > 0)
         {
-           memset(&block[bytes_read], 0x00, 64 - bytes_read);
+           ft_memset(&block[bytes_read], 0x00, 64 - bytes_read);
            ft_process_block(block, digest);
         }
         ft_process_final_block(bytes_read, msg_size, digest);
@@ -158,7 +158,7 @@ void ft_md5_print(const uint32_t digest[4])
     printf("\n");
 }
 
-void ft_md5(t_input input)
+void ft_md5(t_input *input)
 {
     uint32_t digest[4] = {
         0x67452301,
@@ -167,7 +167,7 @@ void ft_md5(t_input input)
         0x10325476
     };
 
-    char *file = input.str;
+    char *file = input->str;
 
     int fd = 0;
     if (file)
@@ -192,7 +192,7 @@ void ft_md5(t_input input)
         else
         {
             ft_md5_final(block, bytes_read, total_msg_size * 8, digest);
-            break;
+            break ;
         }
     }
 

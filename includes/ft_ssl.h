@@ -2,9 +2,16 @@
 # define FT_SSL_H
 
 # include <stdbool.h>
+# include <stdio.h>
+# include <math.h>
+# include <stdint.h>
+# include <string.h>
+# include <fcntl.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <errno.h>
 
 # include "../libft/includes/libft.h"
-# include "ft_md5.h"
 
 typedef enum e_category_type
 {
@@ -23,7 +30,7 @@ typedef struct s_input
 	char *str;
 }	t_input;
 
-typedef struct u_context
+typedef struct s_context
 {
 	t_list *inputs;
 	union
@@ -50,10 +57,27 @@ typedef struct s_command
 {
     const char *name;
 	const t_category *category;
-	void (*cmd_func)(t_input input);
+	void (*cmd_func)(t_input *input);
 }	t_command;
 
+const t_command *ft_get_command(char *cmd);
 t_context ft_parse_digest(char **argv);
 void ft_execute_digest(t_command cmd, t_context ctx);
+
+# ifndef FT_MD5_H
+#  define FT_MD5_H
+
+typedef struct s_md5_round
+{
+    uint32_t A;
+    uint32_t B;
+    uint32_t C;
+    uint32_t D;
+    uint32_t w[16];
+}   t_md5_round;
+
+void ft_md5(t_input *input);
+
+# endif
 
 #endif

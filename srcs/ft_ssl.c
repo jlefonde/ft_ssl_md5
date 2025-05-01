@@ -1,29 +1,7 @@
 #include "../includes/ft_ssl.h"
 
-t_context ft_parse_digest(char **argv)
-{
-    t_context ctx;
-
-    t_input *input = (t_input *)malloc(sizeof(t_input));
-
-    input->type = INPUT_FILE;
-    input->str = "test";
-
-    ctx.inputs = ft_lstnew(input);
-    ctx.u_flags.digest.quiet_mode = false;
-    ctx.u_flags.digest.reverse_mode = false;
-    ctx.u_flags.digest.stdin_mode = false;
-    return ctx;
-}
-
-void ft_execute_digest(t_command cmd, t_context ctx)
-{
-    t_input *input = ctx.inputs->content;
-    cmd.cmd_func(*input);
-}
-
 static const t_category g_categories[] = {
-   [CATEGORY_DIGEST] = { "Message Digest", ft_parse_digest, ft_execute_digest }
+    [CATEGORY_DIGEST] = { "Message Digest", ft_parse_digest, ft_execute_digest }
 };
 
 static const t_command g_commands[] = {
@@ -36,9 +14,9 @@ const t_command *ft_get_command(char *cmd)
     {
         const char *command_name = g_commands[i].name;
         if (ft_strncasecmp(cmd, command_name, ft_strlen(command_name)) == 0)
-            return &g_commands[i];
+            return (&g_commands[i]);
     }
-    return NULL;
+    return (NULL);
 }
 
 void ft_helper()
@@ -63,16 +41,16 @@ int main(int argc, char** argv)
         return (1);
     }
 
-    const t_command *command = ft_get_command(argv[1]);
-    if (!command)
+    const t_command *cmd = ft_get_command(argv[1]);
+    if (!cmd)
     {
         ft_fprintf(STDERR_FILENO, "ft_ssl: Error: '%s' is an invalid command.\n\n", argv[1]);
         ft_helper();
         return (1);
     }
 
-    t_context context = command->category->parse_func(argv);
-    command->category->execute_func(*command, context);
+    t_context ctx = cmd->category->parse_func(argv);
+    cmd->category->execute_func(*cmd, ctx);
 
     return (0);
 }
