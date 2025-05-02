@@ -1,7 +1,7 @@
 #include "../includes/ft_ssl.h"
 
 static const t_category g_categories[] = {
-    [CATEGORY_DIGEST] = { "Message Digest", ft_parse_digest, ft_execute_digest }
+    [CATEGORY_DIGEST] = { "Message Digest", ft_parse_digest, ft_process_digest }
 };
 
 static const t_command g_commands[] = {
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     }
 
     t_context ctx = cmd->category->parse_func(argc, argv);
-    cmd->category->execute_func(*cmd, ctx);
+    cmd->category->process_func(*cmd, ctx);
 
     return (0);
 }

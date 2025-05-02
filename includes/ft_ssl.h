@@ -21,6 +21,7 @@ typedef enum e_category_type
 
 typedef enum e_input_type
 {
+    INPUT_STDIN,
 	INPUT_FILE,
 	INPUT_STR
 }	t_input_type;
@@ -53,7 +54,7 @@ typedef struct s_category
 {
 	const char *name;
 	t_context (*parse_func)(int argc, char **argv);
-	void (*execute_func)(t_command cmd, t_context ctx);
+	void (*process_func)(t_command cmd, t_context ctx);
 }	t_category;
 
 typedef struct s_command
@@ -64,9 +65,8 @@ typedef struct s_command
 	void (*print_func)(void *output);
 }	t_command;
 
-const t_command *ft_get_command(char *cmd);
 t_context ft_parse_digest(int argc, char **argv);
-void ft_execute_digest(t_command cmd, t_context ctx);
+void ft_process_digest(t_command cmd, t_context ctx);
 
 # ifndef FT_MD5_H
 #  define FT_MD5_H

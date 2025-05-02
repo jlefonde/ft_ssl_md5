@@ -1,6 +1,6 @@
 #include "../includes/ft_ssl.h"
 
-static const uint32_t T[64] = {
+static const uint32_t g_T[64] = {
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
     0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
     0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
@@ -11,7 +11,7 @@ static const uint32_t T[64] = {
     0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-static const uint32_t S[4][4] = {
+static const uint32_t g_S[4][4] = {
     {7, 12, 17, 22},
     {5,  9, 14, 20},
     {4, 11, 16, 23},
@@ -45,8 +45,8 @@ static uint32_t ft_I(const uint32_t X, const uint32_t Y, const uint32_t Z)
 
 static uint32_t ft_process_round(const t_md5_round md5_round, const uint32_t func_result, const int i, const int j)
 {
-    uint32_t sum = md5_round.A + func_result + md5_round.w[j] + T[i];
-    uint8_t shift = S[(i / 16)][(i % 4)];
+    uint32_t sum = md5_round.A + func_result + md5_round.w[j] + g_T[i];
+    uint8_t shift = g_S[(i / 16)][(i % 4)];
 
     return md5_round.B + ft_rotate_left(sum, shift);
 }
@@ -159,7 +159,7 @@ void ft_md5_print(void *output)
     free(output);
 }
 
-ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
+ssize_t ft_read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
     if (input->type == INPUT_STR)
     {
@@ -175,8 +175,9 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
     }
 
     ssize_t bytes_read = read(input->fd, buffer, nbytes);
-    if (input->fd == 0)
+    if (input->type == INPUT_STDIN)
     {
+        ((char*)buffer)[bytes_read] = '\0';
         if (!input->str)
             input->str = ft_strdup(buffer);
         else
@@ -186,7 +187,7 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
             free(current_str);
         }
     }
-    return bytes_read;
+    return (bytes_read);
 }
 
 void *ft_md5(t_input *input)
@@ -203,7 +204,7 @@ void *ft_md5(t_input *input)
     uint8_t block[64];
     ssize_t total_msg_size = 0;
     ssize_t bytes_read = 0;
-    while ((bytes_read = read_from_input(input, block, 64)) >= 0)
+    while ((bytes_read = ft_read_from_input(input, block, 64)) >= 0)
     {
         total_msg_size += bytes_read;
 
@@ -221,9 +222,6 @@ void *ft_md5(t_input *input)
         ft_fprintf(STDERR_FILENO, "ft_ssl: md5: %s\n", strerror(errno));
         return (NULL);
     }
-
-    if (total_msg_size == 0 && input->fd == 0)
-        return (NULL);
 
     return (digest);
 }

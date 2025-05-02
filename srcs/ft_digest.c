@@ -41,7 +41,7 @@ static void ft_print_normal_mode(t_command cmd, t_input *input, void *output, bo
     ft_printf("\n");
 }
 
-static void ft_print_digest(t_command cmd, t_context ctx, t_input *input)
+static void ft_process_cmd(t_command cmd, t_context ctx, t_input *input)
 {
     void *output = cmd.cmd_func(input);
     if (!output)
@@ -61,20 +61,18 @@ static void ft_print_digest(t_command cmd, t_context ctx, t_input *input)
         ft_print_normal_mode(cmd, input, output, add_quotes);
 }
 
-void ft_check_stdin(t_context *ctx)
+void ft_handle_stdin_input(int argc, t_context *ctx)
 {
     struct pollfd pfd;
     pfd.fd = STDIN_FILENO;
     pfd.events = POLLIN;
 
     bool is_stdin_ready = poll(&pfd, 1, 0) > 0;
-    bool any_flags = ctx->u_flags.digest.quiet_mode || ctx->u_flags.digest.reverse_mode || ctx->u_flags.digest.stdin_mode || (ft_lstsize(ctx->inputs) > 0);
-
-    if (!any_flags || is_stdin_ready)
+    if (argc == 2 || is_stdin_ready)
     {
         t_input *input = (t_input *)malloc(sizeof(t_input));
 
-        input->type = INPUT_FILE;
+        input->type = INPUT_STDIN;
         input->str = NULL;
         input->fd = STDIN_FILENO;
         input->str_pos = 0;
@@ -97,13 +95,13 @@ t_context ft_parse_digest(int argc, char **argv)
     {
         bool is_input = (sum_mode || file_found);
 
-        if (!is_input && ft_strncmp(argv[i], "-q", 2) == 0)
+        if (!is_input && ft_strncmp(argv[i], "-q", 3) == 0)
             ctx.u_flags.digest.quiet_mode = true;
-        else if (!is_input && ft_strncmp(argv[i], "-r", 2) == 0)
+        else if (!is_input && ft_strncmp(argv[i], "-r", 3) == 0)
             ctx.u_flags.digest.reverse_mode = true;
-        else if (!is_input && ft_strncmp(argv[i], "-p", 2) == 0)
+        else if (!is_input && ft_strncmp(argv[i], "-p", 3) == 0)
             ctx.u_flags.digest.stdin_mode = true;
-        else if (!is_input && ft_strncmp(argv[i], "-s", 2) == 0)
+        else if (!is_input && ft_strncmp(argv[i], "-s", 3) == 0)
             sum_mode = true;
         else
         {
@@ -122,12 +120,12 @@ t_context ft_parse_digest(int argc, char **argv)
             ft_lstadd_back(&ctx.inputs, ft_lstnew(input));
         }
     }
-    ft_check_stdin(&ctx);
+    ft_handle_stdin_input(argc, &ctx);
 
     return (ctx);
 }
 
-void ft_execute_digest(t_command cmd, t_context ctx)
+void ft_process_digest(t_command cmd, t_context ctx)
 {
     t_list *current = ctx.inputs;
     t_list *next;
@@ -138,7 +136,7 @@ void ft_execute_digest(t_command cmd, t_context ctx)
         t_input *input = current->content;
         if (input)
         {
-            if (input->type == INPUT_FILE && input->fd == -1)
+            if (input->type == INPUT_FILE)
             {
                 input->fd = open(input->str, O_RDONLY);
                 if (input->fd == -1)
@@ -150,8 +148,8 @@ void ft_execute_digest(t_command cmd, t_context ctx)
                     continue;
                 }
             }
-            ft_print_digest(cmd, ctx, input);
-            if (input->fd > 2)
+            ft_process_cmd(cmd, ctx, input);
+            if (input->type == INPUT_FILE)
                 close(input->fd);
             free(input);
         }
