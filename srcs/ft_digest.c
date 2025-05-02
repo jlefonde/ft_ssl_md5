@@ -1,32 +1,76 @@
 #include "../includes/ft_ssl.h"
 
-static void ft_display_input(t_input *input, const char *start, const char *end)
+static void ft_display_input(bool add_quotes, const char *start, const char *input_str, const char *end)
 {
-    if (input->type == INPUT_FILE)
-        ft_printf("%s%s%s", start, input->str, end);
+    if (add_quotes)
+        ft_printf("%s\"%s\"%s", start, input_str, end);
     else
-        ft_printf("%s\"%s\"%s", start, input->str, end);
+        ft_printf("%s%s%s", start, input_str, end);
 }
 
-static void ft_display_digest(t_input *input, t_command cmd, t_context ctx)
+static void ft_print_quiet_mode(t_command cmd, void *output)
 {
-    if (!ctx.u_flags.digest.quiet_mode)
-    {
-        if (ctx.u_flags.digest.reverse_mode)
-        {
-            cmd.cmd_func(input);
-            ft_display_input(input, " ", "\n");
-        }
-        else
-        {
-            char *cmd_name = ft_strmap(cmd.name, ft_toupper);
-            ft_printf("%s", cmd_name);
-            free(cmd_name);
-            ft_display_input(input, " (", ")= ");
-            cmd.cmd_func(input);
-            ft_printf("\n");
-        }
-    }
+    cmd.print_func(output);
+    ft_printf("\n");
+}
+
+static void ft_print_reverse_mode(t_command cmd, t_input *input, void *output, bool add_quotes)
+{
+    cmd.print_func(output);
+    ft_display_input(add_quotes, " ", input->str, "\n");
+}
+
+static void ft_print_stdin_mode(t_command cmd, t_input *input, void *output, bool add_quotes)
+{
+    if (!add_quotes)
+        ft_display_input(add_quotes, "(", "stdin", ")= ");
+    else
+        ft_display_input(add_quotes, "(", input->str, ")= ");
+    cmd.print_func(output);
+    ft_printf("\n");
+}
+
+static void ft_print_normal_mode(t_command cmd, t_input *input, void *output, bool add_quotes)
+{
+    char *cmd_name = ft_strmap(cmd.name, ft_toupper);
+    ft_printf("%s", cmd_name);
+    free(cmd_name);
+
+    ft_display_input(add_quotes, " (", input->str, ")= ");
+    cmd.print_func(output);
+    ft_printf("\n");
+}
+
+static void ft_print_digest(t_command cmd, t_context ctx, t_input *input)
+{
+    void *output = cmd.cmd_func(input);
+    if (!output)
+        return ;
+
+    bool is_file = (input->type == INPUT_FILE);
+    bool is_stdin = (is_file && input->fd == 0);
+    bool add_quotes = (!is_file || (is_stdin && ctx.u_flags.digest.stdin_mode));
+
+    if (ctx.u_flags.digest.quiet_mode)
+        ft_print_quiet_mode(cmd, output);
+    else if (is_stdin)
+        ft_print_stdin_mode(cmd, input, output, add_quotes);
+    else if (ctx.u_flags.digest.reverse_mode)
+        ft_print_reverse_mode(cmd, input, output, add_quotes);
+    else
+        ft_print_normal_mode(cmd, input, output, add_quotes);
+}
+
+t_input *create_stdin_input(void)
+{
+    t_input *stdin_input = (t_input *)malloc(sizeof(t_input));
+
+    stdin_input->type = INPUT_FILE;
+    stdin_input->str = NULL;
+    stdin_input->fd = STDIN_FILENO;
+    stdin_input->str_pos = 0;
+
+    return (stdin_input);
 }
 
 t_context ft_parse_digest(int argc, char **argv)
@@ -35,7 +79,7 @@ t_context ft_parse_digest(int argc, char **argv)
     ctx.u_flags.digest.quiet_mode = false;
     ctx.u_flags.digest.reverse_mode = false;
     ctx.u_flags.digest.stdin_mode = false;
-    ctx.inputs = NULL;
+    ctx.inputs = ft_lstnew(create_stdin_input());
 
     bool sum_mode = false;
     bool file_found = false;
@@ -81,7 +125,7 @@ void ft_execute_digest(t_command cmd, t_context ctx)
         t_input *input = current->content;
         if (input)
         {
-            if (input->type == INPUT_FILE)
+            if (input->type == INPUT_FILE && input->fd == -1)
             {
                 input->fd = open(input->str, O_RDONLY);
                 if (input->fd == -1)
@@ -93,7 +137,7 @@ void ft_execute_digest(t_command cmd, t_context ctx)
                     continue;
                 }
             }
-            ft_display_digest(input, cmd, ctx);
+            ft_print_digest(cmd, ctx, input);
             if (input->fd > 2)
                 close(input->fd);
             free(input);

@@ -5,7 +5,7 @@ static const t_category g_categories[] = {
 };
 
 static const t_command g_commands[] = {
-    { "md5", &g_categories[CATEGORY_DIGEST], ft_md5 }
+    { "md5", &g_categories[CATEGORY_DIGEST], ft_md5, ft_md5_print }
 };
 
 const t_command *ft_get_command(char *cmd)

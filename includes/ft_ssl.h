@@ -59,7 +59,8 @@ typedef struct s_command
 {
     const char *name;
 	const t_category *category;
-	void (*cmd_func)(t_input *input);
+	void *(*cmd_func)(t_input *input);
+	void (*print_func)(void *output);
 }	t_command;
 
 const t_command *ft_get_command(char *cmd);
@@ -78,7 +79,8 @@ typedef struct s_md5_round
     uint32_t w[16];
 }   t_md5_round;
 
-void ft_md5(t_input *input);
+void *ft_md5(t_input *input);
+void ft_md5_print(void *output);
 
 # endif
 

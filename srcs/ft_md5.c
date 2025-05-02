@@ -150,37 +150,55 @@ void ft_md5_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint3
     }
 }
 
-void ft_md5_print(const uint32_t digest[4])
+void ft_md5_print(void *output)
 {
+    uint32_t *digest = output;
     for (int i = 0; i < 4; ++i)
         for (int j = 0; j < 4; ++j)
             ft_printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
+    free(output);
 }
 
 ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
-    if (input->type == INPUT_FILE)
-        return read(input->fd, buffer, nbytes);
+    if (input->type == INPUT_STR)
+    {
+        size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
+        if (!remaining_bytes)
+            return (0);
 
-    size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
-    if (!remaining_bytes)
-        return (0);
+        size_t to_copy = remaining_bytes < nbytes ? remaining_bytes : nbytes;
+        ft_memcpy(buffer, &input->str[input->str_pos], to_copy);
+        input->str_pos += to_copy;
 
-    size_t to_copy = remaining_bytes < nbytes ? remaining_bytes : nbytes;
-    ft_memcpy(buffer, &input->str[input->str_pos], to_copy);
-    input->str_pos += to_copy;
+        return (to_copy);
+    }
 
-    return (to_copy);
+    ssize_t bytes_read = read(input->fd, buffer, nbytes);
+    if (input->fd == 0)
+    {
+        if (!input->str)
+            input->str = ft_strdup(buffer);
+        else
+        {
+            char *current_str = ft_strdup(input->str);
+            input->str = ft_strjoin(current_str, buffer);
+            free(current_str);
+        }
+    }
+    return bytes_read;
 }
 
-void ft_md5(t_input *input)
+void *ft_md5(t_input *input)
 {
-    uint32_t digest[4] = {
-        0x67452301,
-        0xefcdab89,
-        0x98badcfe,
-        0x10325476
-    };
+    uint32_t *digest = malloc(4 * sizeof(uint32_t));
+    if (!digest)
+        return (NULL);
+
+    digest[0] = 0x67452301;
+    digest[1] = 0xefcdab89;
+    digest[2] = 0x98badcfe;
+    digest[3] = 0x10325476;
 
     uint8_t block[64];
     ssize_t total_msg_size = 0;
@@ -198,5 +216,14 @@ void ft_md5(t_input *input)
         }
     }
 
-    ft_md5_print(digest);
+    if (bytes_read == -1)
+    {
+        ft_fprintf(STDERR_FILENO, "ft_ssl: md5: %s\n", strerror(errno));
+        return (NULL);
+    }
+
+    if (total_msg_size == 0 && input->fd == 0)
+        return (NULL);
+
+    return (digest);
 }
