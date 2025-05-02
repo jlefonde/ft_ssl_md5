@@ -81,7 +81,17 @@ void ft_handle_stdin_input(int argc, t_context *ctx)
     }
 }
 
-t_context ft_parse_digest(int argc, char **argv)
+void ft_print_error(const char *cmd_name, const char *input, const char *error_msg)
+{
+    if (cmd_name && input  && error_msg)
+        ft_fprintf(STDERR_FILENO, "ft_ssl: %s: %s: %s\n", cmd_name, input, error_msg);
+    else if (cmd_name && !input  && error_msg)
+        ft_fprintf(STDERR_FILENO, "ft_ssl: %s: %s\n", cmd_name, error_msg);
+    else if (!cmd_name && !input  && error_msg)
+        ft_fprintf(STDERR_FILENO, "ft_ssl: %s\n", error_msg);
+}
+
+t_context ft_parse_digest(const char *cmd_name, int argc, char **argv)
 {
     t_context ctx;
     ctx.u_flags.digest.quiet_mode = false;
@@ -95,14 +105,19 @@ t_context ft_parse_digest(int argc, char **argv)
     {
         bool is_input = (sum_mode || file_found);
 
-        if (!is_input && ft_strncmp(argv[i], "-q", 3) == 0)
-            ctx.u_flags.digest.quiet_mode = true;
-        else if (!is_input && ft_strncmp(argv[i], "-r", 3) == 0)
-            ctx.u_flags.digest.reverse_mode = true;
-        else if (!is_input && ft_strncmp(argv[i], "-p", 3) == 0)
-            ctx.u_flags.digest.stdin_mode = true;
-        else if (!is_input && ft_strncmp(argv[i], "-s", 3) == 0)
-            sum_mode = true;
+        if (!is_input && argv[i][0] == '-')
+        {
+            if (ft_strncmp(argv[i], "-q", 3) == 0)
+                ctx.u_flags.digest.quiet_mode = true;
+            else if (ft_strncmp(argv[i], "-r", 3) == 0)
+                ctx.u_flags.digest.reverse_mode = true;
+            else if (ft_strncmp(argv[i], "-p", 3) == 0)
+                ctx.u_flags.digest.stdin_mode = true;
+            else if (ft_strncmp(argv[i], "-s", 3) == 0)
+                sum_mode = true;
+            else
+                ft_print_error(cmd_name, argv[i], "Unknown flag");
+        }
         else
         {
             t_input *input = (t_input *)malloc(sizeof(t_input));
@@ -141,7 +156,7 @@ void ft_process_digest(t_command cmd, t_context ctx)
                 input->fd = open(input->str, O_RDONLY);
                 if (input->fd == -1)
                 {
-                    ft_printf("ft_ssl: %s: %s: %s\n", cmd.name, input->str, strerror(errno));
+                    ft_print_error(cmd.name, input->str, strerror(errno));
                     free(input);
                     free(current);
                     current = next;

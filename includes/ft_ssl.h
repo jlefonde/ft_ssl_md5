@@ -53,7 +53,7 @@ typedef struct s_command t_command;
 typedef struct s_category
 {
 	const char *name;
-	t_context (*parse_func)(int argc, char **argv);
+	t_context (*parse_func)(const char *cmd_name, int argc, char **argv);
 	void (*process_func)(t_command cmd, t_context ctx);
 }	t_category;
 
@@ -65,7 +65,7 @@ typedef struct s_command
 	void (*print_func)(void *output);
 }	t_command;
 
-t_context ft_parse_digest(int argc, char **argv);
+t_context ft_parse_digest(const char *cmd_name, int argc, char **argv);
 void ft_process_digest(t_command cmd, t_context ctx);
 
 # ifndef FT_MD5_H
