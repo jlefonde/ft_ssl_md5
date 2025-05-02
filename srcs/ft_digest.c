@@ -61,16 +61,26 @@ static void ft_print_digest(t_command cmd, t_context ctx, t_input *input)
         ft_print_normal_mode(cmd, input, output, add_quotes);
 }
 
-t_input *create_stdin_input(void)
+void ft_check_stdin(t_context *ctx)
 {
-    t_input *stdin_input = (t_input *)malloc(sizeof(t_input));
+    struct pollfd pfd;
+    pfd.fd = STDIN_FILENO;
+    pfd.events = POLLIN;
 
-    stdin_input->type = INPUT_FILE;
-    stdin_input->str = NULL;
-    stdin_input->fd = STDIN_FILENO;
-    stdin_input->str_pos = 0;
+    bool is_stdin_ready = poll(&pfd, 1, 0) > 0;
+    bool any_flags = ctx->u_flags.digest.quiet_mode || ctx->u_flags.digest.reverse_mode || ctx->u_flags.digest.stdin_mode || (ft_lstsize(ctx->inputs) > 0);
 
-    return (stdin_input);
+    if (!any_flags || is_stdin_ready)
+    {
+        t_input *input = (t_input *)malloc(sizeof(t_input));
+
+        input->type = INPUT_FILE;
+        input->str = NULL;
+        input->fd = STDIN_FILENO;
+        input->str_pos = 0;
+
+        ft_lstadd_front(&ctx->inputs, ft_lstnew(input));
+    }
 }
 
 t_context ft_parse_digest(int argc, char **argv)
@@ -79,13 +89,14 @@ t_context ft_parse_digest(int argc, char **argv)
     ctx.u_flags.digest.quiet_mode = false;
     ctx.u_flags.digest.reverse_mode = false;
     ctx.u_flags.digest.stdin_mode = false;
-    ctx.inputs = ft_lstnew(create_stdin_input());
+    ctx.inputs = NULL;
 
     bool sum_mode = false;
     bool file_found = false;
     for (int i = 2; i < argc; ++i)
     {
         bool is_input = (sum_mode || file_found);
+
         if (!is_input && ft_strncmp(argv[i], "-q", 2) == 0)
             ctx.u_flags.digest.quiet_mode = true;
         else if (!is_input && ft_strncmp(argv[i], "-r", 2) == 0)
@@ -111,6 +122,8 @@ t_context ft_parse_digest(int argc, char **argv)
             ft_lstadd_back(&ctx.inputs, ft_lstnew(input));
         }
     }
+    ft_check_stdin(&ctx);
+
     return (ctx);
 }
 
