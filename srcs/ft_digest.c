@@ -79,14 +79,19 @@ void ft_handle_stdin_input(int argc, t_context *ctx, bool file_found)
     }
 }
 
-void ft_print_error(const char *cmd_name, const char *input, const char *error_msg)
+void ft_print_error(const char *s1, const char *s2, const char *s3)
 {
-    if (cmd_name && input  && error_msg)
-        ft_fprintf(STDERR_FILENO, "ft_ssl: %s: %s: %s\n", cmd_name, input, error_msg);
-    else if (cmd_name && !input  && error_msg)
-        ft_fprintf(STDERR_FILENO, "ft_ssl: %s: %s\n", cmd_name, error_msg);
-    else if (!cmd_name && !input  && error_msg)
-        ft_fprintf(STDERR_FILENO, "ft_ssl: %s\n", error_msg);
+    if (!s1 && !s2 && !s3)
+        return ;
+
+    ft_fprintf(STDERR_FILENO, "ft_ssl");
+    if (s1)
+        ft_fprintf(STDERR_FILENO, ": %s", s1);
+    if (s2)
+        ft_fprintf(STDERR_FILENO, ": %s", s2);
+    if (s3)
+        ft_fprintf(STDERR_FILENO, ": %s", s3);
+    ft_fprintf(STDERR_FILENO, "\n");
 }
 
 t_context ft_parse_digest(const char *cmd_name, int argc, char **argv)

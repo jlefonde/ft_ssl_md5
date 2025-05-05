@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     const t_command *cmd = ft_get_command(argv[1]);
     if (!cmd)
     {
-        ft_fprintf(STDERR_FILENO, "ft_ssl: Error: '%s' is an invalid command.\n\n", argv[1]);
+        ft_fprintf(STDERR_FILENO, "ft_ssl: '%s' is an invalid command.\n\n", argv[1]);
         ft_helper();
         return (1);
     }
