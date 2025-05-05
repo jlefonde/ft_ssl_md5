@@ -44,6 +44,7 @@ typedef struct s_context
     		bool reverse_mode;
     		bool quiet_mode;
     		bool stdin_mode;
+    		bool sum_mode;
     	}	digest;
 	} u_flags;
 }	t_context;

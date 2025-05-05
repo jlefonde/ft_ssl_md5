@@ -3,15 +3,15 @@
 static void ft_display_input(bool add_quotes, const char *start, const char *input_str, const char *end)
 {
     if (add_quotes)
-        ft_printf("%s\"%s\"%s", start, input_str, end);
+        printf("%s\"%s\"%s", start, input_str, end);
     else
-        ft_printf("%s%s%s", start, input_str, end);
+        printf("%s%s%s", start, input_str, end);
 }
 
 static void ft_print_quiet_mode(t_command cmd, void *output)
 {
     cmd.print_func(output);
-    ft_printf("\n");
+    printf("\n");
 }
 
 static void ft_print_reverse_mode(t_command cmd, t_input *input, void *output, bool add_quotes)
@@ -27,18 +27,18 @@ static void ft_print_stdin_mode(t_command cmd, t_input *input, void *output, boo
     else
         ft_display_input(add_quotes, "(", input->str, ")= ");
     cmd.print_func(output);
-    ft_printf("\n");
+    printf("\n");
 }
 
 static void ft_print_normal_mode(t_command cmd, t_input *input, void *output, bool add_quotes)
 {
     char *cmd_name = ft_strmap(cmd.name, ft_toupper);
-    ft_printf("%s", cmd_name);
+    printf("%s", cmd_name);
     free(cmd_name);
 
-    ft_display_input(add_quotes, " (", input->str, ")= ");
+    ft_display_input(add_quotes, "(", input->str, ")= ");
     cmd.print_func(output);
-    ft_printf("\n");
+    printf("\n");
 }
 
 static void ft_process_cmd(t_command cmd, t_context ctx, t_input *input)
@@ -48,8 +48,8 @@ static void ft_process_cmd(t_command cmd, t_context ctx, t_input *input)
         return ;
 
     bool is_file = (input->type == INPUT_FILE);
-    bool is_stdin = (is_file && input->fd == 0);
-    bool add_quotes = (!is_file || (is_stdin && ctx.u_flags.digest.stdin_mode));
+    bool is_stdin = (input->type == INPUT_STDIN);
+    bool add_quotes = (!is_file && !is_stdin || (is_stdin && ctx.u_flags.digest.stdin_mode));
 
     if (ctx.u_flags.digest.quiet_mode)
         ft_print_quiet_mode(cmd, output);
@@ -61,20 +61,18 @@ static void ft_process_cmd(t_command cmd, t_context ctx, t_input *input)
         ft_print_normal_mode(cmd, input, output, add_quotes);
 }
 
-void ft_handle_stdin_input(int argc, t_context *ctx)
+void ft_handle_stdin_input(int argc, t_context *ctx, bool file_found)
 {
-    struct pollfd pfd;
-    pfd.fd = STDIN_FILENO;
-    pfd.events = POLLIN;
-
-    bool is_stdin_ready = poll(&pfd, 1, 0) > 0;
-    if (argc == 2 || is_stdin_ready)
+    bool any_flags = (ctx->u_flags.digest.reverse_mode || ctx->u_flags.digest.quiet_mode || ctx->u_flags.digest.stdin_mode || ctx->u_flags.digest.sum_mode);
+    bool has_input = ft_lstsize(ctx->inputs) > 0;
+    
+    if ((argc == 2 || ctx->u_flags.digest.stdin_mode || !has_input) && (!file_found || any_flags))
     {
         t_input *input = (t_input *)malloc(sizeof(t_input));
 
         input->type = INPUT_STDIN;
-        input->str = NULL;
         input->fd = STDIN_FILENO;
+        input->str = NULL;
         input->str_pos = 0;
 
         ft_lstadd_front(&ctx->inputs, ft_lstnew(input));
@@ -97,6 +95,7 @@ t_context ft_parse_digest(const char *cmd_name, int argc, char **argv)
     ctx.u_flags.digest.quiet_mode = false;
     ctx.u_flags.digest.reverse_mode = false;
     ctx.u_flags.digest.stdin_mode = false;
+    ctx.u_flags.digest.sum_mode = false;
     ctx.inputs = NULL;
 
     bool sum_mode = false;
@@ -114,9 +113,15 @@ t_context ft_parse_digest(const char *cmd_name, int argc, char **argv)
             else if (ft_strncmp(argv[i], "-p", 3) == 0)
                 ctx.u_flags.digest.stdin_mode = true;
             else if (ft_strncmp(argv[i], "-s", 3) == 0)
+            {
+                ctx.u_flags.digest.sum_mode = true;
                 sum_mode = true;
+            }
             else
+            {
                 ft_print_error(cmd_name, argv[i], "Unknown flag");
+                exit(EXIT_FAILURE);
+            }
         }
         else
         {
@@ -135,7 +140,14 @@ t_context ft_parse_digest(const char *cmd_name, int argc, char **argv)
             ft_lstadd_back(&ctx.inputs, ft_lstnew(input));
         }
     }
-    ft_handle_stdin_input(argc, &ctx);
+
+    if (sum_mode)
+    {
+        ft_print_error(cmd_name, NULL, "Missing argument for -s");
+        exit(EXIT_FAILURE);
+    }
+
+    ft_handle_stdin_input(argc, &ctx, file_found);
 
     return (ctx);
 }

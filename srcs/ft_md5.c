@@ -155,7 +155,7 @@ void ft_md5_print(void *output)
     uint32_t *digest = output;
     for (int i = 0; i < 4; ++i)
         for (int j = 0; j < 4; ++j)
-            ft_printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
+            printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
     free(output);
 }
 
