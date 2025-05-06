@@ -49,8 +49,9 @@ int main(int argc, char** argv)
         return (1);
     }
 
-    t_context *ctx = cmd->category->parse_func(cmd->name, argc, argv);
+    t_context *ctx = cmd->category->parse_func(cmd, argc, argv);
     cmd->category->process_func(cmd, ctx);
+    free(ctx);
 
     return (0);
 }

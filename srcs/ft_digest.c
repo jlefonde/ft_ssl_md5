@@ -87,14 +87,15 @@ static void ft_process_cmd(const t_command *cmd, t_context *ctx, t_input *input)
         ft_print_normal_mode(cmd, input, output, add_quotes);
 }
 
-t_context *ft_parse_digest(const char *cmd_name, int argc, char **argv)
+t_context *ft_parse_digest(const t_command *cmd, int argc, char **argv)
 {
     t_context *ctx = (t_context *)malloc(sizeof(t_context));
     if (!ctx)
     {
-        ft_print_error(cmd_name, strerror(errno), NULL);
+        ft_print_error(cmd->name, strerror(errno), NULL);
         exit(EXIT_FAILURE);
     }
+
     ctx->digest.quiet_mode = false;
     ctx->digest.reverse_mode = false;
     ctx->digest.stdin_mode = false;
@@ -121,18 +122,14 @@ t_context *ft_parse_digest(const char *cmd_name, int argc, char **argv)
                 sum_mode = true;
             }
             else
-            {
-                ft_print_error(cmd_name, argv[i], "Unknown flag");
-                // TODO: free ctx and inputs
-                exit(EXIT_FAILURE);
-            }
+                ft_fatal_error(ctx, cmd->name, argv[i], "Unknown flag");
         }
         else
         {
             t_input *input = (t_input *)malloc(sizeof(t_input));
 
             input->type = sum_mode ? INPUT_STR : INPUT_FILE;
-            input->str = argv[i];
+            input->str = ft_strdup(argv[i]);
             input->fd = -1;
             input->str_pos = 0;
 
@@ -146,11 +143,7 @@ t_context *ft_parse_digest(const char *cmd_name, int argc, char **argv)
     }
 
     if (sum_mode)
-    {
-        ft_print_error(cmd_name, NULL, "Option -s needs a value");\
-        // TODO: free ctx and inputs
-        exit(EXIT_FAILURE);
-    }
+        ft_fatal_error(ctx, cmd->name, NULL, "Option -s needs a value");
 
     ft_handle_stdin_input(argc, ctx, file_found);
 
@@ -174,16 +167,14 @@ void ft_process_digest(const t_command *cmd, t_context *ctx)
                 if (input->fd == -1)
                 {
                     ft_print_error(cmd->name, input->str, strerror(errno));
-                    free(input);
+                    ft_free_input(input);
                     free(current);
                     current = next;
                     continue;
                 }
             }
             ft_process_cmd(cmd, ctx, input);
-            if (input->type == INPUT_FILE)
-                close(input->fd);
-            free(input);
+            ft_free_input(input);
         }
         free(current);
         current = next;

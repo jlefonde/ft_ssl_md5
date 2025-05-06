@@ -1,5 +1,25 @@
 #include "ft_ssl.h"
 
+void ft_free_input(void *content)
+{
+    t_input *input = (t_input *)content;
+
+    if (input->str)
+        free(input->str);
+    if (input->type == INPUT_FILE && input->fd != -1)
+        close(input->fd);
+    free(input);
+}
+
+void ft_fatal_error(t_context *ctx, const char *s1, const char *s2, const char *s3)
+{
+    ft_print_error(s1, s2, s3);
+    if (ctx->digest.inputs)
+        ft_lstclear(&ctx->digest.inputs, ft_free_input);
+    free(ctx);
+    exit(EXIT_FAILURE);
+}
+
 void ft_print_error(const char *s1, const char *s2, const char *s3)
 {
     if (!s1 && !s2 && !s3)

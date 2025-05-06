@@ -11,6 +11,7 @@
 # include <errno.h>
 
 # include "../libft/includes/libft.h"
+# include "ft_md5.h"
 
 typedef enum e_category_type
 {
@@ -49,7 +50,7 @@ typedef struct s_command t_command;
 typedef struct s_category
 {
     const char *name;
-    t_context *(*parse_func)(const char *cmd_name, int argc, char **argv);
+    t_context *(*parse_func)(const t_command *cmd, int argc, char **argv);
     void (*process_func)(const t_command *cmd, t_context *ctx);
 }	t_category;
 
@@ -62,26 +63,15 @@ typedef struct s_command
 }	t_command;
 
 // UTILS
+void ft_free_input(void *content);
+void ft_fatal_error(t_context *ctx, const char *s1, const char *s2, const char *s3);
 void ft_print_error(const char *s1, const char *s2, const char *s3);
 uint32_t ft_rotate_left(uint32_t X, uint32_t N);
 uint32_t ft_rotate_right(uint32_t X, uint32_t N);
 ssize_t ft_read_from_input(t_input *input, void* buffer, size_t nbytes);
 
 // CATEGORIES
-t_context *ft_parse_digest(const char *cmd_name, int argc, char **argv);
+t_context *ft_parse_digest(const t_command *cmd, int argc, char **argv);
 void ft_process_digest(const t_command *cmd, t_context *ctx);
-
-// MD5 DIGEST
-typedef struct s_md5_round
-{
-    uint32_t A;
-    uint32_t B;
-    uint32_t C;
-    uint32_t D;
-    uint32_t w[16];
-}   t_md5_round;
-
-void *ft_md5(t_input *input);
-void ft_md5_print(void *output);
 
 #endif
