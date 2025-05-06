@@ -1,6 +1,6 @@
 #include "ft_ssl.h"
 
-static void ft_print_cmd(t_command *cmd)
+static void ft_print_cmd(const t_command *cmd)
 {
     char *cmd_name = ft_strmap(cmd->name, ft_toupper);
     printf("%s", cmd_name);
@@ -15,19 +15,19 @@ static void ft_display_input(bool add_quotes, const char *start, const char *inp
         printf("%s%s%s", start, input_str, end);
 }
 
-static void ft_print_quiet_mode(t_command *cmd, void *output)
+static void ft_print_quiet_mode(const t_command *cmd, void *output)
 {
     cmd->print_func(output);
     printf("\n");
 }
 
-static void ft_print_reverse_mode(t_command *cmd, t_input *input, void *output, bool add_quotes)
+static void ft_print_reverse_mode(const t_command *cmd, t_input *input, void *output, bool add_quotes)
 {
     cmd->print_func(output);
     ft_display_input(add_quotes, " ", input->str, "\n");
 }
 
-static void ft_print_stdin_mode(t_command *cmd, t_input *input, void *output, bool add_quotes)
+static void ft_print_stdin_mode(const t_command *cmd, t_input *input, void *output, bool add_quotes)
 {
     ft_print_cmd(cmd);
 
@@ -40,7 +40,7 @@ static void ft_print_stdin_mode(t_command *cmd, t_input *input, void *output, bo
     printf("\n");
 }
 
-static void ft_print_normal_mode(t_command *cmd, t_input *input, void *output, bool add_quotes)
+static void ft_print_normal_mode(const t_command *cmd, t_input *input, void *output, bool add_quotes)
 {
     ft_print_cmd(cmd);
 
@@ -67,7 +67,7 @@ void ft_handle_stdin_input(int argc, t_context *ctx, bool file_found)
     }
 }
 
-static void ft_process_cmd(t_command *cmd, t_context *ctx, t_input *input)
+static void ft_process_cmd(const t_command *cmd, t_context *ctx, t_input *input)
 {
     void *output = cmd->cmd_func(input);
     if (!output)
@@ -157,7 +157,7 @@ t_context *ft_parse_digest(const char *cmd_name, int argc, char **argv)
     return (ctx);
 }
 
-void ft_process_digest(t_command *cmd, t_context *ctx)
+void ft_process_digest(const t_command *cmd, t_context *ctx)
 {
     t_list *current = ctx->digest.inputs;
     t_list *next;
