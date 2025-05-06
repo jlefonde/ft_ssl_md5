@@ -1,4 +1,4 @@
-#include "../includes/ft_ssl.h"
+#include "ft_ssl.h"
 
 static const uint32_t g_T[64] = {
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -17,11 +17,6 @@ static const uint32_t g_S[4][4] = {
     {4, 11, 16, 23},
     {6, 10, 15, 21}
 };
-
-static uint32_t ft_rotate_left(const uint32_t X, const uint32_t N)
-{
-    return ((X << N) | (X >> (32 - N)));
-}
 
 static uint32_t ft_F(const uint32_t X, const uint32_t Y, const uint32_t Z)
 {
@@ -46,7 +41,7 @@ static uint32_t ft_I(const uint32_t X, const uint32_t Y, const uint32_t Z)
 static uint32_t ft_process_round(const t_md5_round md5_round, const uint32_t func_result, const int i, const int j)
 {
     uint32_t sum = md5_round.A + func_result + md5_round.w[j] + g_T[i];
-    uint8_t shift = g_S[(i / 16)][(i % 4)];
+    uint32_t shift = g_S[(i / 16)][(i % 4)];
 
     return md5_round.B + ft_rotate_left(sum, shift);
 }
@@ -86,7 +81,7 @@ static uint32_t (*ft_md5_round[4])(const t_md5_round md5_round, const int i) = {
     ft_md5_round_4
 };
 
-void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
+static void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
 {
     t_md5_round md5_round;
 
@@ -116,7 +111,7 @@ void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
     digest[3] = digest[3] + md5_round.D;
 }
 
-void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+static void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
 {
     uint8_t block[64];
     int i = 0;
@@ -129,7 +124,7 @@ void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_t diges
     ft_process_block(block, digest);
 }
 
-void ft_md5_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+static void ft_md5_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
 {
     block[bytes_read++] = 0x80;
 
@@ -157,37 +152,6 @@ void ft_md5_print(void *output)
         for (int j = 0; j < 4; ++j)
             printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
     free(output);
-}
-
-ssize_t ft_read_from_input(t_input *input, void* buffer, size_t nbytes)
-{
-    if (input->type == INPUT_STR)
-    {
-        size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
-        if (!remaining_bytes)
-            return (0);
-
-        size_t to_copy = remaining_bytes < nbytes ? remaining_bytes : nbytes;
-        ft_memcpy(buffer, &input->str[input->str_pos], to_copy);
-        input->str_pos += to_copy;
-
-        return (to_copy);
-    }
-
-    ssize_t bytes_read = read(input->fd, buffer, nbytes);
-    if (input->type == INPUT_STDIN)
-    {
-        ((char*)buffer)[bytes_read] = '\0';
-        if (!input->str)
-            input->str = ft_strdup(buffer);
-        else
-        {
-            char *current_str = ft_strdup(input->str);
-            input->str = ft_strjoin(current_str, buffer);
-            free(current_str);
-        }
-    }
-    return (bytes_read);
 }
 
 void *ft_md5(t_input *input)

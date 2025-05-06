@@ -1,4 +1,4 @@
-#include "../includes/ft_ssl.h"
+#include "ft_ssl.h"
 
 static const t_category g_categories[] = {
     [CATEGORY_DIGEST] = { "Message Digest", ft_parse_digest, ft_process_digest }
@@ -8,18 +8,18 @@ static const t_command g_commands[] = {
     { "md5", &g_categories[CATEGORY_DIGEST], ft_md5, ft_md5_print }
 };
 
-const t_command *ft_get_command(char *cmd)
+static const t_command *ft_get_command(char *cmd)
 {
     for (int i = 0; i < sizeof(g_commands)/sizeof(g_commands[0]); ++i)
     {
         const char *command_name = g_commands[i].name;
-        if (ft_strncasecmp(cmd, command_name, ft_strlen(command_name)) == 0)
+        if (ft_strcasecmp(cmd, command_name) == 0)
             return (&g_commands[i]);
     }
     return (NULL);
 }
 
-void ft_helper()
+static void ft_helper()
 {
     for (int i = 0; i < sizeof(g_categories)/sizeof(g_categories[0]); ++i)
     {
@@ -44,13 +44,13 @@ int main(int argc, char** argv)
     const t_command *cmd = ft_get_command(argv[1]);
     if (!cmd)
     {
-        ft_fprintf(STDERR_FILENO, "ft_ssl: '%s' is an invalid command.\n\n", argv[1]);
+        ft_fprintf(STDERR_FILENO, "ft_ssl: '%s' is an invalid command\n\n", argv[1]);
         ft_helper();
         return (1);
     }
 
-    t_context ctx = cmd->category->parse_func(cmd->name, argc, argv);
-    cmd->category->process_func(*cmd, ctx);
+    t_context *ctx = cmd->category->parse_func(cmd->name, argc, argv);
+    cmd->category->process_func(cmd, ctx);
 
     return (0);
 }
