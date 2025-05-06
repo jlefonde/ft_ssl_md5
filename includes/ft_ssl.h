@@ -12,6 +12,7 @@
 
 # include "../libft/includes/libft.h"
 # include "ft_md5.h"
+# include "ft_sha256.h"
 
 typedef enum e_category_type
 {
