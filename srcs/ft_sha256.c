@@ -55,18 +55,16 @@ static void ft_process_block(const uint8_t msg[64], uint32_t digest[8])
 {
     uint32_t w[64];
 
-    for (int i = 0; i < 16; ++i)
+    for (int i = 0; i < 64; ++i)
     {
-        int j = i * 4;
+        if (i < 16)
+        {
+            int j = i * 4;
 
-        w[i] = msg[j] | msg[j + 1] << 8 | msg[j + 2] << 16 | msg[j + 3] << 24;
-        printf("w[%d] = %#x\n", i, w[i]);
-    }
-
-    for (int i = 16; i < 64; ++i)
-    {
-        w[i] = ft_small_sigma_1(w[i - 2]) + w[i - 7] + ft_small_sigma_0(w[i - 15]) + w[i - 16];
-        printf("w[%d] = %#x\n", i, w[i]);
+            w[i] = (msg[j] << 24) | (msg[j + 1] << 16) | (msg[j + 2] << 8) | msg[j + 3];
+        }
+        else
+            w[i] = ft_small_sigma_1(w[i - 2]) + w[i - 7] + ft_small_sigma_0(w[i - 15]) + w[i - 16];
     }
 
     uint32_t A = digest[0];
@@ -110,6 +108,14 @@ static void ft_process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32
         block[i++] = 0x80;
 
     ft_memset(&block[i], 0, 56 - i);
+    msg_size = ((msg_size >> 56) & 0x00000000000000FF) |
+               ((msg_size >> 40) & 0x000000000000FF00) |
+               ((msg_size >> 24) & 0x0000000000FF0000) |
+               ((msg_size >> 8)  & 0x00000000FF000000) |
+               ((msg_size << 8)  & 0x000000FF00000000) |
+               ((msg_size << 24) & 0x0000FF0000000000) |
+               ((msg_size << 40) & 0x00FF000000000000) |
+               ((msg_size << 56) & 0xFF00000000000000);
     ft_memcpy(&block[56], &msg_size, 8);
     ft_process_block(block, digest);
 }
@@ -121,6 +127,14 @@ static void ft_sha256_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_
     if (bytes_read < 56)
     {
         ft_memset(&block[bytes_read], 0x00, 56 - bytes_read);
+        msg_size = ((msg_size >> 56) & 0x00000000000000FF) |
+                   ((msg_size >> 40) & 0x000000000000FF00) |
+                   ((msg_size >> 24) & 0x0000000000FF0000) |
+                   ((msg_size >> 8)  & 0x00000000FF000000) |
+                   ((msg_size << 8)  & 0x000000FF00000000) |
+                   ((msg_size << 24) & 0x0000FF0000000000) |
+                   ((msg_size << 40) & 0x00FF000000000000) |
+                   ((msg_size << 56) & 0xFF00000000000000);
         ft_memcpy(&block[56], &msg_size, 8);
         ft_process_block(block, digest);
     }
@@ -139,7 +153,7 @@ void ft_sha256_print(void *output)
 {
     uint32_t *digest = output;
     for (int i = 0; i < 8; ++i)
-        printf("%02x", digest[i]);
+        printf("%08x", digest[i]);
     free(output);
 }
 

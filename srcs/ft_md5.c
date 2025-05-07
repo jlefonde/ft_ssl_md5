@@ -119,7 +119,7 @@ static void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_
     if (!bytes_read)
         block[i++] = 0x80;
 
-    ft_memset(&block[i], 0, 56 - i);
+    ft_memset(&block[i], 0x00, 56 - i);
     ft_memcpy(&block[56], &msg_size, 8);
     ft_process_block(block, digest);
 }
