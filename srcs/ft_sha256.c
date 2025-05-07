@@ -8,24 +8,25 @@ static const uint32_t g_K[64] = {
     0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
     0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
     0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+};
 
-static uint32_t ft_choose(uint32_t X, uint16_t Y, uint32_t Z)
+static uint32_t ft_choose(uint32_t X, uint32_t Y, uint32_t Z)
 {
     return ((X & Y) ^ (~X & Z));
 }
 
-static uint32_t ft_majority(uint32_t X, uint16_t Y, uint32_t Z)
+static uint32_t ft_majority(uint32_t X, uint32_t Y, uint32_t Z)
 {
     return ((X & Y) ^ (X & Z) ^ (Y & Z));
 }
 
-static uint32_t ft_big_sigma(uint32_t X, int r1, int r2, int r3)
+static uint32_t ft_big_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t r3)
 {
     return (ft_rotate_right(X, r1) ^ ft_rotate_right(X, r2) ^ ft_rotate_right(X, r3));
 }
 
-static uint32_t ft_small_sigma(uint32_t X, int r1, int r2, int s)
+static uint32_t ft_small_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t s)
 {
     return (ft_rotate_right(X, r1) ^ ft_rotate_right(X, r2) ^ (X >> s));
 }
@@ -52,18 +53,55 @@ static uint32_t ft_small_sigma_1(uint32_t X)
 
 static void ft_process_block(const uint8_t msg[64], uint32_t digest[8])
 {
-    uint32_t w[16];
+    uint32_t w[64];
 
     for (int i = 0; i < 16; ++i)
     {
         int j = i * 4;
 
         w[i] = msg[j] | msg[j + 1] << 8 | msg[j + 2] << 16 | msg[j + 3] << 24;
-        printf("w[%d] = %x\n", i, w[i]);
+        printf("w[%d] = %#x\n", i, w[i]);
     }
+
+    for (int i = 16; i < 64; ++i)
+    {
+        w[i] = ft_small_sigma_1(w[i - 2]) + w[i - 7] + ft_small_sigma_0(w[i - 15]) + w[i - 16];
+        printf("w[%d] = %#x\n", i, w[i]);
+    }
+
+    uint32_t A = digest[0];
+    uint32_t B = digest[1];
+    uint32_t C = digest[2];
+    uint32_t D = digest[3];
+    uint32_t E = digest[4];
+    uint32_t F = digest[5];
+    uint32_t G = digest[6];
+    uint32_t H = digest[7];
+    for (int i = 0; i < 64; ++i)
+    {
+        uint32_t T1 = H + ft_big_sigma_1(E) + ft_choose(E, F, G) + g_K[i] + w[i];
+        uint32_t T2 = ft_big_sigma_0(A) + ft_majority(A, B, C);
+        H = G;
+        G = F;
+        F = E;
+        E = D + T1;
+        D = C;
+        C = B;
+        B = A;
+        A = T1 + T2;
+    }
+
+    digest[0] = digest[0] + A;
+    digest[1] = digest[1] + B;
+    digest[2] = digest[2] + C;
+    digest[3] = digest[3] + D;
+    digest[4] = digest[4] + E;
+    digest[5] = digest[5] + F;
+    digest[6] = digest[6] + G;
+    digest[7] = digest[7] + H;
 }
 
-static void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+static void ft_process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
 {
     uint8_t block[64];
     int i = 0;
@@ -76,7 +114,7 @@ static void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_
     ft_process_block(block, digest);
 }
 
-static void ft_sha256_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+static void ft_sha256_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
 {
     block[bytes_read++] = 0x80;
 
@@ -99,7 +137,10 @@ static void ft_sha256_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_s
 
 void ft_sha256_print(void *output)
 {
-    printf("OUTPUT");
+    uint32_t *digest = output;
+    for (int i = 0; i < 8; ++i)
+        printf("%02x", digest[i]);
+    free(output);
 }
 
 void *ft_sha256(t_input *input)
@@ -135,7 +176,7 @@ void *ft_sha256(t_input *input)
 
     if (bytes_read == -1)
     {
-        ft_fprintf(STDERR_FILENO, "ft_ssl: md5: %s\n", strerror(errno));
+        ft_fprintf(STDERR_FILENO, "ft_ssl: sha256: %s\n", strerror(errno));
         return (NULL);
     }
 
