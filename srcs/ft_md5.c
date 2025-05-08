@@ -105,13 +105,13 @@ static void ft_process_block(const uint8_t msg[64], uint32_t digest[4])
         md5_round.B = F;
     }
 
-    digest[0] = digest[0] + md5_round.A;
-    digest[1] = digest[1] + md5_round.B;
-    digest[2] = digest[2] + md5_round.C;
-    digest[3] = digest[3] + md5_round.D;
+    digest[0] += md5_round.A;
+    digest[1] += md5_round.B;
+    digest[2] += md5_round.C;
+    digest[3] += md5_round.D;
 }
 
-static void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+static void ft_process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32_t digest[4])
 {
     uint8_t block[64];
     int i = 0;
@@ -119,12 +119,12 @@ static void ft_process_final_block(ssize_t bytes_read, ssize_t msg_size, uint32_
     if (!bytes_read)
         block[i++] = 0x80;
 
-    ft_memset(&block[i], 0x00, 56 - i);
+    ft_memset(&block[i], 0x00, 56 - bytes_read);
     ft_memcpy(&block[56], &msg_size, 8);
     ft_process_block(block, digest);
 }
 
-static void ft_md5_final(uint8_t block[64], ssize_t bytes_read, ssize_t msg_size, uint32_t digest[4])
+static void ft_md5_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, uint32_t digest[4])
 {
     block[bytes_read++] = 0x80;
 

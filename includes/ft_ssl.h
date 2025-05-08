@@ -67,6 +67,7 @@ typedef struct s_command
 void ft_free_input(void *content);
 void ft_fatal_error(t_context *ctx, const char *s1, const char *s2, const char *s3);
 void ft_print_error(const char *s1, const char *s2, const char *s3);
+void ft_to_big_endian(uint64_t *value);
 uint32_t ft_rotate_left(uint32_t X, uint32_t N);
 uint32_t ft_rotate_right(uint32_t X, uint32_t N);
 ssize_t ft_read_from_input(t_input *input, void* buffer, size_t nbytes);

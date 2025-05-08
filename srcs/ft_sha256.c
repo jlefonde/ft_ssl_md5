@@ -89,14 +89,14 @@ static void ft_process_block(const uint8_t msg[64], uint32_t digest[8])
         A = T1 + T2;
     }
 
-    digest[0] = digest[0] + A;
-    digest[1] = digest[1] + B;
-    digest[2] = digest[2] + C;
-    digest[3] = digest[3] + D;
-    digest[4] = digest[4] + E;
-    digest[5] = digest[5] + F;
-    digest[6] = digest[6] + G;
-    digest[7] = digest[7] + H;
+    digest[0] += A;
+    digest[1] += B;
+    digest[2] += C;
+    digest[3] += D;
+    digest[4] += E;
+    digest[5] += F;
+    digest[6] += G;
+    digest[7] += H;
 }
 
 static void ft_process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
@@ -108,14 +108,7 @@ static void ft_process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32
         block[i++] = 0x80;
 
     ft_memset(&block[i], 0, 56 - i);
-    msg_size = ((msg_size >> 56) & 0x00000000000000FF) |
-               ((msg_size >> 40) & 0x000000000000FF00) |
-               ((msg_size >> 24) & 0x0000000000FF0000) |
-               ((msg_size >> 8)  & 0x00000000FF000000) |
-               ((msg_size << 8)  & 0x000000FF00000000) |
-               ((msg_size << 24) & 0x0000FF0000000000) |
-               ((msg_size << 40) & 0x00FF000000000000) |
-               ((msg_size << 56) & 0xFF00000000000000);
+    ft_to_big_endian(&msg_size);
     ft_memcpy(&block[56], &msg_size, 8);
     ft_process_block(block, digest);
 }
@@ -127,14 +120,7 @@ static void ft_sha256_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_
     if (bytes_read < 56)
     {
         ft_memset(&block[bytes_read], 0x00, 56 - bytes_read);
-        msg_size = ((msg_size >> 56) & 0x00000000000000FF) |
-                   ((msg_size >> 40) & 0x000000000000FF00) |
-                   ((msg_size >> 24) & 0x0000000000FF0000) |
-                   ((msg_size >> 8)  & 0x00000000FF000000) |
-                   ((msg_size << 8)  & 0x000000FF00000000) |
-                   ((msg_size << 24) & 0x0000FF0000000000) |
-                   ((msg_size << 40) & 0x00FF000000000000) |
-                   ((msg_size << 56) & 0xFF00000000000000);
+        ft_to_big_endian(&msg_size);
         ft_memcpy(&block[56], &msg_size, 8);
         ft_process_block(block, digest);
     }
