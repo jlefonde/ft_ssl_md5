@@ -5,14 +5,14 @@ HEADERS_DIR = includes
 OBJECTS_DIR = objs
 
 SOURCES = ft_ssl.c \
-			utils.c \
+			ft_utils.c \
             ft_digest.c \
 			ft_md5.c \
 			ft_sha256.c
 
 OBJECTS = $(addprefix $(OBJECTS_DIR)/, $(SOURCES:.c=.o))
 
-CFLAGS = -I$(HEADERS_DIR) #-Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -I$(HEADERS_DIR)
 LDFLAGS = -L./libft -lft
 
 all: libft $(NAME)

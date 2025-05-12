@@ -6,7 +6,7 @@ void ft_free_input(void *content)
 
     if (input->str)
         free(input->str);
-    if (input->type == INPUT_FILE && input->fd != -1)
+    if (input->type == INPUT_FILE)
         close(input->fd);
     free(input);
 }

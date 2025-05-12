@@ -11,7 +11,7 @@ static const t_command g_commands[] = {
 
 static const t_command *ft_get_command(char *cmd)
 {
-    for (int i = 0; i < sizeof(g_commands)/sizeof(g_commands[0]); ++i)
+    for (size_t i = 0; i < sizeof(g_commands)/sizeof(g_commands[0]); ++i)
     {
         const char *command_name = g_commands[i].name;
         if (ft_strcasecmp(cmd, command_name) == 0)
@@ -23,10 +23,10 @@ static const t_command *ft_get_command(char *cmd)
 static void ft_helper(int fd)
 {
     size_t categories_size = sizeof(g_categories)/sizeof(g_categories[0]);
-    for (int i = 0; i < categories_size; ++i)
+    for (size_t i = 0; i < categories_size; ++i)
     {
         ft_fprintf(fd, "%s commands:\n", g_categories[i].name);
-        for (int j = 0; j < sizeof(g_commands)/sizeof(g_commands[0]); ++j)
+        for (size_t j = 0; j < sizeof(g_commands)/sizeof(g_commands[0]); ++j)
         {
             if (g_commands[j].category == &g_categories[i])
                 ft_fprintf(fd, " %s\n", g_commands[j].name);
