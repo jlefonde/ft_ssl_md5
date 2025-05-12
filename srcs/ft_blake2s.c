@@ -84,14 +84,8 @@ static void *ft_blake2s(t_input *input)
     if (!digest)
         return (NULL);
 
-    digest[0] = g_IV[0]; 
-    digest[1] = g_IV[1];
-    digest[2] = g_IV[2];
-    digest[3] = g_IV[3];
-    digest[4] = g_IV[4];
-    digest[5] = g_IV[5];
-    digest[6] = g_IV[6];
-    digest[7] = g_IV[7];
+    for (int i = 0; i < 8; ++i)
+        digest[i] = g_IV[i];
 }
 
 void ft_process_blake2s(const t_command *cmd, int argc, char **argv)
