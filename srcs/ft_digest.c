@@ -33,14 +33,6 @@ static void ft_print_reverse_mode(const t_command *cmd, t_context *ctx, t_input 
     ft_display_input(ctx, input, " ", "\n");
 }
 
-static void ft_print_stdin_mode(const t_command *cmd, t_context *ctx, t_input *input, void *output)
-{
-    ft_print_cmd(cmd);
-    ft_display_input(ctx, input, "(", ")= ");
-    ctx->digest.print_func(output);
-    printf("\n");
-}
-
 static void ft_print_normal_mode(const t_command *cmd, t_context *ctx, t_input *input, void *output)
 {
     ft_print_cmd(cmd);
@@ -75,9 +67,7 @@ static void ft_process_cmd(const t_command *cmd, t_context *ctx, t_input *input)
 
     if (ctx->digest.quiet_mode)
         ft_print_quiet_mode(cmd, ctx, output);
-    else if (input->type == INPUT_STDIN)
-        ft_print_stdin_mode(cmd, ctx, input, output);
-    else if (ctx->digest.reverse_mode)
+    else if (ctx->digest.reverse_mode && input->type != INPUT_STDIN)
         ft_print_reverse_mode(cmd, ctx, input, output);
     else
         ft_print_normal_mode(cmd, ctx, input, output);
