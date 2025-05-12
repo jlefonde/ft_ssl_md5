@@ -65,14 +65,8 @@ static void ft_F(uint8_t block[16], uint32_t digest[8], uint64_t total_bytes_rea
         for (int j = 0; j < 10; ++j)
             s[j] = g_SIGMA[i % 10][j];
 
-        ft_G(v, g_index[0], block[s[0]], block[s[1]]);
-        ft_G(v, g_index[1], block[s[2]], block[s[3]]);
-        ft_G(v, g_index[2], block[s[4]], block[s[5]]);
-        ft_G(v, g_index[3], block[s[6]], block[s[7]]);
-        ft_G(v, g_index[4], block[s[8]], block[s[9]]);
-        ft_G(v, g_index[5], block[s[10]], block[s[11]]);
-        ft_G(v, g_index[6], block[s[12]], block[s[13]]);
-        ft_G(v, g_index[7], block[s[14]], block[s[15]]);
+        for (int j = 0, k = 0; j < 8; ++j, k += 2)
+            ft_G(v, g_index[j], block[k], block[k + 1]);
     }
 
     for (int i = 0; i < 8; ++i)
