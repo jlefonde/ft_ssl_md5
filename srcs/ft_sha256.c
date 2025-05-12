@@ -149,7 +149,7 @@ static void *ft_sha256(t_input *input)
     if (!digest)
         return (NULL);
 
-    digest[0] = 0x6a09e667;
+    digest[0] = 0x6a09e667; 
     digest[1] = 0xbb67ae85;
     digest[2] = 0x3c6ef372;
     digest[3] = 0xa54ff53a;

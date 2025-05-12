@@ -6,7 +6,8 @@ static const t_category g_categories[] = {
 
 static const t_command g_commands[] = {
     { "md5", &g_categories[CATEGORY_DIGEST], ft_process_md5 },
-    { "sha256", &g_categories[CATEGORY_DIGEST], ft_process_sha256 }
+    { "sha256", &g_categories[CATEGORY_DIGEST], ft_process_sha256 },
+    { "blake2s", &g_categories[CATEGORY_DIGEST], ft_process_blake2s }
 };
 
 static const t_command *ft_get_command(char *cmd)

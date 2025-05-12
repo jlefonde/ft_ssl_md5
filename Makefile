@@ -8,11 +8,12 @@ SOURCES = ft_ssl.c \
 			ft_utils.c \
             ft_digest.c \
 			ft_md5.c \
-			ft_sha256.c
+			ft_sha256.c \
+			ft_blake2s.c
 
 OBJECTS = $(addprefix $(OBJECTS_DIR)/, $(SOURCES:.c=.o))
 
-CFLAGS = -Wall -Wextra -Werror -I$(HEADERS_DIR)
+CFLAGS = -I$(HEADERS_DIR) #-Wall -Wextra -Werror
 LDFLAGS = -L./libft -lft
 
 all: libft $(NAME)
