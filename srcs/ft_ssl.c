@@ -1,12 +1,12 @@
 #include "ft_ssl.h"
 
 static const t_category g_categories[] = {
-    [CATEGORY_DIGEST] = { "Message Digest", ft_parse_digest, ft_process_digest }
+    [CATEGORY_DIGEST] = { "Message Digest" }
 };
 
 static const t_command g_commands[] = {
-    { "md5", &g_categories[CATEGORY_DIGEST], ft_md5, ft_md5_print },
-    { "sha256", &g_categories[CATEGORY_DIGEST], ft_sha256, ft_sha256_print },
+    { "md5", &g_categories[CATEGORY_DIGEST], ft_process_md5 },
+    { "sha256", &g_categories[CATEGORY_DIGEST], ft_process_sha256 }
 };
 
 static const t_command *ft_get_command(char *cmd)
@@ -22,7 +22,8 @@ static const t_command *ft_get_command(char *cmd)
 
 static void ft_helper(int fd)
 {
-    for (int i = 0; i < sizeof(g_categories)/sizeof(g_categories[0]); ++i)
+    size_t categories_size = sizeof(g_categories)/sizeof(g_categories[0]);
+    for (int i = 0; i < categories_size; ++i)
     {
         ft_fprintf(fd, "%s commands:\n", g_categories[i].name);
         for (int j = 0; j < sizeof(g_commands)/sizeof(g_commands[0]); ++j)
@@ -30,6 +31,8 @@ static void ft_helper(int fd)
             if (g_commands[j].category == &g_categories[i])
                 ft_fprintf(fd, " %s\n", g_commands[j].name);
         }
+        if ((i + 1) < categories_size)
+            ft_fprintf(fd, "\n");
     }
 }
 
@@ -37,7 +40,7 @@ int main(int argc, char** argv)
 {
     if (argc < 2)
     {
-        ft_fprintf(STDERR_FILENO, "usage: ./ft_ssl <command> [flags] [file/string]\n\n");
+        ft_fprintf(STDERR_FILENO, "usage: ./ft_ssl <command> [options] [file/string]\n\n");
         ft_helper(STDERR_FILENO);
         return (1);
     }
@@ -50,9 +53,7 @@ int main(int argc, char** argv)
         return (1);
     }
 
-    t_context *ctx = cmd->category->parse_func(cmd, argc, argv);
-    cmd->category->process_func(cmd, ctx);
-    free(ctx);
+    cmd->process_func(cmd, argc, argv);
 
     return (0);
 }

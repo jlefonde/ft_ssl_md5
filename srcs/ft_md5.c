@@ -145,7 +145,7 @@ static void ft_md5_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_siz
     }
 }
 
-void ft_md5_print(void *output)
+static void ft_md5_print(void *output)
 {
     uint32_t *digest = output;
     for (int i = 0; i < 4; ++i)
@@ -154,7 +154,7 @@ void ft_md5_print(void *output)
     free(output);
 }
 
-void *ft_md5(t_input *input)
+static void *ft_md5(t_input *input)
 {
     uint32_t *digest = malloc(4 * sizeof(uint32_t));
     if (!digest)
@@ -188,4 +188,14 @@ void *ft_md5(t_input *input)
     }
 
     return (digest);
+}
+
+void ft_process_md5(const t_command *cmd, int argc, char **argv)
+{
+    t_context *ctx = ft_parse_digest(cmd, argc, argv);
+    ctx->digest.cmd_func = ft_md5;
+    ctx->digest.print_func = ft_md5_print;
+
+    ft_process_digest(cmd, ctx);
+    free(ctx);
 }

@@ -3,9 +3,8 @@
 
 # include "ft_ssl.h"
 
-typedef struct s_input t_input;
+typedef struct s_command t_command;
 
-void *ft_sha256(t_input *input);
-void ft_sha256_print(void *output);
+void ft_process_sha256(const t_command *cmd, int argc, char **argv);
 
 # endif

@@ -15,19 +15,19 @@ static void ft_display_input(bool add_quotes, const char *start, const char *inp
         printf("%s%s%s", start, input_str, end);
 }
 
-static void ft_print_quiet_mode(const t_command *cmd, void *output)
+static void ft_print_quiet_mode(const t_command *cmd, t_context *ctx, void *output)
 {
-    cmd->print_func(output);
+    ctx->digest.print_func(output);
     printf("\n");
 }
 
-static void ft_print_reverse_mode(const t_command *cmd, t_input *input, void *output, bool add_quotes)
+static void ft_print_reverse_mode(const t_command *cmd, t_context *ctx, t_input *input, void *output, bool add_quotes)
 {
-    cmd->print_func(output);
+    ctx->digest.print_func(output);
     ft_display_input(add_quotes, " ", input->str, "\n");
 }
 
-static void ft_print_stdin_mode(const t_command *cmd, t_input *input, void *output, bool add_quotes)
+static void ft_print_stdin_mode(const t_command *cmd, t_context *ctx, t_input *input, void *output, bool add_quotes)
 {
     ft_print_cmd(cmd);
 
@@ -36,16 +36,16 @@ static void ft_print_stdin_mode(const t_command *cmd, t_input *input, void *outp
     else
         ft_display_input(add_quotes, "(", input->str, ")= ");
 
-    cmd->print_func(output);
+    ctx->digest.print_func(output);
     printf("\n");
 }
 
-static void ft_print_normal_mode(const t_command *cmd, t_input *input, void *output, bool add_quotes)
+static void ft_print_normal_mode(const t_command *cmd, t_context *ctx, t_input *input, void *output, bool add_quotes)
 {
     ft_print_cmd(cmd);
 
     ft_display_input(add_quotes, "(", input->str, ")= ");
-    cmd->print_func(output);
+    ctx->digest.print_func(output);
     printf("\n");
 }
 
@@ -69,7 +69,7 @@ void ft_handle_stdin_input(int argc, t_context *ctx, bool file_found)
 
 static void ft_process_cmd(const t_command *cmd, t_context *ctx, t_input *input)
 {
-    void *output = cmd->cmd_func(input);
+    void *output = ctx->digest.cmd_func(input);
     if (!output)
         return ;
 
@@ -78,13 +78,13 @@ static void ft_process_cmd(const t_command *cmd, t_context *ctx, t_input *input)
     bool add_quotes = (!is_file && !is_stdin || (is_stdin && ctx->digest.stdin_mode));
 
     if (ctx->digest.quiet_mode)
-        ft_print_quiet_mode(cmd, output);
+        ft_print_quiet_mode(cmd, ctx, output);
     else if (is_stdin)
-        ft_print_stdin_mode(cmd, input, output, add_quotes);
+        ft_print_stdin_mode(cmd, ctx, input, output, add_quotes);
     else if (ctx->digest.reverse_mode)
-        ft_print_reverse_mode(cmd, input, output, add_quotes);
+        ft_print_reverse_mode(cmd, ctx, input, output, add_quotes);
     else
-        ft_print_normal_mode(cmd, input, output, add_quotes);
+        ft_print_normal_mode(cmd, ctx, input, output, add_quotes);
 }
 
 t_context *ft_parse_digest(const t_command *cmd, int argc, char **argv)

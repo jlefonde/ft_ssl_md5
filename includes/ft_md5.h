@@ -12,9 +12,8 @@ typedef struct s_md5_round
     uint32_t w[16];
 }   t_md5_round;
 
-typedef struct s_input t_input;
+typedef struct s_command t_command;
 
-void *ft_md5(t_input *input);
-void ft_md5_print(void *output);
+void ft_process_md5(const t_command *cmd, int argc, char **argv);
 
 # endif
