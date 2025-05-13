@@ -114,30 +114,42 @@ static void *ft_blake2s(t_input *input)
     for (int i = 0; i < 8; ++i)
         digest[i] = g_IV[i];
 
-    digest[0] ^= 0x01010000 ^ 32;
+    digest[0] ^= 0x01010020;
 
     uint8_t block[64];
+    uint8_t next_block[64];
     ssize_t total_msg_size = 0;
     ssize_t bytes_read = 0;
-    while ((bytes_read = ft_read_from_input(input, block, 64)) >= 0)
-    {
-        total_msg_size += bytes_read;
+    ssize_t next_bytes_read = 0;
 
-        if (bytes_read == 64)
-            ft_process_block(block, total_msg_size, digest, false);
-        else
-        {
-            ft_blake2s_final(block, bytes_read, total_msg_size, digest);
-            break;
-        }
-    }
-
+    bytes_read = ft_read_from_input(input, block, 64);
     if (bytes_read == -1)
     {
         ft_print_error("blake2s", strerror(errno), NULL);
         free(digest);
         return (NULL);
     }
+    total_msg_size += bytes_read;
+
+    while (bytes_read == 64)
+    {
+        next_bytes_read = ft_read_from_input(input, next_block, 64);
+        if (next_bytes_read == -1)
+        {
+            ft_print_error("blake2s", strerror(errno), NULL);
+            free(digest);
+            return (NULL);
+        }
+        total_msg_size += next_bytes_read;
+
+        if (!next_bytes_read)
+            break;
+
+        ft_process_block(block, total_msg_size - next_bytes_read, digest, false);
+        ft_memcpy(block, next_block, 64);
+        bytes_read = next_bytes_read;
+    }
+    ft_blake2s_final(block, bytes_read, total_msg_size, digest);
 
     return (digest);
 }
