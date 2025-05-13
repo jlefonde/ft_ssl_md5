@@ -151,7 +151,10 @@ static void *ft_sha256(t_input *input)
 {
     uint32_t *digest = malloc(8 * sizeof(uint32_t));
     if (!digest)
+    {
+        ft_print_error("sha256", strerror(errno), NULL);
         return (NULL);
+    }
 
     for (int i = 0; i < 8; ++i)
         digest[i] = g_IV[i];
@@ -174,7 +177,8 @@ static void *ft_sha256(t_input *input)
 
     if (bytes_read == -1)
     {
-        ft_fprintf(STDERR_FILENO, "ft_ssl: sha256: %s\n", strerror(errno));
+        ft_print_error("sha256", strerror(errno), NULL);
+        free(digest);
         return (NULL);
     }
 

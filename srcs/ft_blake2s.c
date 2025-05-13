@@ -106,12 +106,15 @@ static void *ft_blake2s(t_input *input)
 {
     uint32_t *digest = malloc(8 * sizeof(uint32_t));
     if (!digest)
+    {
+        ft_print_error("blake2s", strerror(errno), NULL);
         return (NULL);
+    }
 
     for (int i = 0; i < 8; ++i)
         digest[i] = g_IV[i];
 
-    digest[0] ^= 0x01010020;
+    digest[0] ^= 0x01010000 ^ 32;
 
     uint8_t block[64];
     ssize_t total_msg_size = 0;
@@ -131,7 +134,8 @@ static void *ft_blake2s(t_input *input)
 
     if (bytes_read == -1)
     {
-        ft_fprintf(STDERR_FILENO, "ft_ssl: sha256: %s\n", strerror(errno));
+        ft_print_error("blake2s", strerror(errno), NULL);
+        free(digest);
         return (NULL);
     }
 

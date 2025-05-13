@@ -158,7 +158,10 @@ static void *ft_md5(t_input *input)
 {
     uint32_t *digest = malloc(4 * sizeof(uint32_t));
     if (!digest)
+    {
+        ft_print_error("md5", strerror(errno), NULL);
         return (NULL);
+    }
 
     digest[0] = 0x67452301;
     digest[1] = 0xefcdab89;
@@ -183,7 +186,8 @@ static void *ft_md5(t_input *input)
 
     if (bytes_read == -1)
     {
-        ft_fprintf(STDERR_FILENO, "ft_ssl: md5: %s\n", strerror(errno));
+        ft_print_error("md5", strerror(errno), NULL);
+        free(digest);
         return (NULL);
     }
 
