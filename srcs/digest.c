@@ -1,13 +1,13 @@
-#include "ft_ssl.h"
+#include "ssl.h"
 
-static void ft_print_cmd(const t_command *cmd)
+static void print_cmd(const t_command *cmd)
 {
     char *cmd_name = ft_strmap(cmd->name, ft_toupper);
     printf("%s", cmd_name);
     free(cmd_name);
 }
 
-static void ft_display_input(t_context *ctx, t_input *input, char *start, const char *end)
+static void display_input(t_context *ctx, t_input *input, char *start, const char *end)
 {
     bool is_file = (input->type == INPUT_FILE);
     bool is_stdin = (input->type == INPUT_STDIN);
@@ -21,27 +21,27 @@ static void ft_display_input(t_context *ctx, t_input *input, char *start, const 
         printf("%s%s%s", start, input->str, end);
 }
 
-static void ft_print_quiet_mode(t_context *ctx, void *output)
+static void print_quiet_mode(t_context *ctx, void *output)
 {
     ctx->digest.print_func(output);
     printf("\n");
 }
 
-static void ft_print_reverse_mode(t_context *ctx, t_input *input, void *output)
+static void print_reverse_mode(t_context *ctx, t_input *input, void *output)
 {
     ctx->digest.print_func(output);
-    ft_display_input(ctx, input, " ", "\n");
+    display_input(ctx, input, " ", "\n");
 }
 
-static void ft_print_normal_mode(const t_command *cmd, t_context *ctx, t_input *input, void *output)
+static void print_normal_mode(const t_command *cmd, t_context *ctx, t_input *input, void *output)
 {
-    ft_print_cmd(cmd);
-    ft_display_input(ctx, input, "(", ")= ");
+    print_cmd(cmd);
+    display_input(ctx, input, "(", ")= ");
     ctx->digest.print_func(output);
     printf("\n");
 }
 
-void ft_handle_stdin_input(int argc, t_context *ctx, bool file_found)
+void handle_stdin_input(int argc, t_context *ctx, bool file_found)
 {
     bool any_flags = (ctx->digest.reverse_mode || ctx->digest.quiet_mode || ctx->digest.stdin_mode || ctx->digest.sum_mode);
     bool has_input = ft_lstsize(ctx->digest.inputs) > 0;
@@ -59,26 +59,26 @@ void ft_handle_stdin_input(int argc, t_context *ctx, bool file_found)
     }
 }
 
-static void ft_process_cmd(const t_command *cmd, t_context *ctx, t_input *input)
+static void process_cmd(const t_command *cmd, t_context *ctx, t_input *input)
 {
     void *output = ctx->digest.cmd_func(input);
     if (!output)
         return ;
 
     if (ctx->digest.quiet_mode)
-        ft_print_quiet_mode(ctx, output);
+        print_quiet_mode(ctx, output);
     else if (ctx->digest.reverse_mode && input->type != INPUT_STDIN)
-        ft_print_reverse_mode(ctx, input, output);
+        print_reverse_mode(ctx, input, output);
     else
-        ft_print_normal_mode(cmd, ctx, input, output);
+        print_normal_mode(cmd, ctx, input, output);
 }
 
-t_context *ft_parse_digest(const t_command *cmd, int argc, char **argv)
+t_context *parse_digest(const t_command *cmd, int argc, char **argv)
 {
     t_context *ctx = (t_context *)malloc(sizeof(t_context));
     if (!ctx)
     {
-        ft_print_error(cmd->name, strerror(errno), NULL);
+        print_error(cmd->name, strerror(errno), NULL);
         exit(EXIT_FAILURE);
     }
 
@@ -108,14 +108,14 @@ t_context *ft_parse_digest(const t_command *cmd, int argc, char **argv)
                 sum_mode = true;
             }
             else
-                ft_fatal_error(ctx, cmd->name, argv[i], "Unknown flag");
+                fatal_error(ctx, cmd->name, argv[i], "Unknown flag");
         }
         else
         {
             t_input *input = (t_input *)malloc(sizeof(t_input));
 
             input->type = sum_mode ? INPUT_STR : INPUT_FILE;
-            input->str = ft_strdup(argv[i]);
+            input->str = strdup(argv[i]);
             input->fd = -1;
             input->str_pos = 0;
 
@@ -129,14 +129,14 @@ t_context *ft_parse_digest(const t_command *cmd, int argc, char **argv)
     }
 
     if (sum_mode)
-        ft_fatal_error(ctx, cmd->name, NULL, "Option -s needs a value");
+        fatal_error(ctx, cmd->name, NULL, "Option -s needs a value");
 
-    ft_handle_stdin_input(argc, ctx, file_found);
+    handle_stdin_input(argc, ctx, file_found);
 
     return (ctx);
 }
 
-void ft_process_digest(const t_command *cmd, t_context *ctx)
+void process_digest(const t_command *cmd, t_context *ctx)
 {
     t_list *current = ctx->digest.inputs;
     t_list *next;
@@ -152,15 +152,15 @@ void ft_process_digest(const t_command *cmd, t_context *ctx)
                 input->fd = open(input->str, O_RDONLY);
                 if (input->fd == -1)
                 {
-                    ft_print_error(cmd->name, input->str, strerror(errno));
-                    ft_free_input(input);
+                    print_error(cmd->name, input->str, strerror(errno));
+                    free_input(input);
                     free(current);
                     current = next;
                     continue;
                 }
             }
-            ft_process_cmd(cmd, ctx, input);
-            ft_free_input(input);
+            process_cmd(cmd, ctx, input);
+            free_input(input);
         }
         free(current);
         current = next;

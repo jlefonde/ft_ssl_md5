@@ -1,4 +1,4 @@
-#include "ft_ssl.h"
+#include "ssl.h"
 
 static uint32_t g_IV[8] = {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
@@ -28,7 +28,7 @@ static size_t g_index[8][4] = {
     { 3, 4,  9, 14 }
 };
 
-static void ft_G(uint32_t v[16], size_t index[4], uint32_t x, uint32_t y)
+static void G(uint32_t v[16], size_t index[4], uint32_t x, uint32_t y)
 {
     size_t a = index[0];
     size_t b = index[1];
@@ -36,16 +36,16 @@ static void ft_G(uint32_t v[16], size_t index[4], uint32_t x, uint32_t y)
     size_t d = index[3];
 
     v[a] = (v[a] + v[b] + x) % 4294967296;
-    v[d] = ft_rotate_right(v[d] ^ v[a], 16);
+    v[d] = rotate_right(v[d] ^ v[a], 16);
     v[c] = (v[c] + v[d]) % 4294967296;
-    v[b] = ft_rotate_right(v[b] ^ v[c], 12);
+    v[b] = rotate_right(v[b] ^ v[c], 12);
     v[a] = (v[a] + v[b] + y) % 4294967296;
-    v[d] = ft_rotate_right(v[d] ^ v[a], 8);
+    v[d] = rotate_right(v[d] ^ v[a], 8);
     v[c] = (v[c] + v[d]) % 4294967296;
-    v[b] = ft_rotate_right(v[b] ^ v[c], 7);
+    v[b] = rotate_right(v[b] ^ v[c], 7);
 }
 
-static void ft_F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read, bool final)
+static void F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read, bool final)
 {
     uint32_t v[16];
 
@@ -66,14 +66,14 @@ static void ft_F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_re
             s[j] = g_SIGMA[i % 10][j];
 
         for (int j = 0, k = 0; j < 8; ++j, k += 2)
-            ft_G(v, g_index[j], block[s[k]], block[s[k + 1]]);
+            G(v, g_index[j], block[s[k]], block[s[k + 1]]);
     }
 
     for (int i = 0; i < 8; ++i)
         digest[i] ^= v[i] ^ v[i + 8];
 }
 
-static void ft_process_block(const uint8_t msg[64], uint64_t msg_size, uint32_t digest[8], bool final)
+static void process_block(const uint8_t msg[64], uint64_t msg_size, uint32_t digest[8], bool final)
 {    
     uint32_t w[16];
 
@@ -84,16 +84,16 @@ static void ft_process_block(const uint8_t msg[64], uint64_t msg_size, uint32_t 
         w[i] = msg[j] | msg[j + 1] << 8 | msg[j + 2] << 16 | msg[j + 3] << 24;
     }
 
-    ft_F(w, digest, msg_size, final);
+    F(w, digest, msg_size, final);
 }
 
-static void ft_blake2s_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
+static void blake2s_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
 {
     ft_memset(&block[bytes_read], 0x00, 64 - bytes_read);
-    ft_process_block(block, msg_size, digest, true);
+    process_block(block, msg_size, digest, true);
 }
 
-static void ft_blake2s_print(void *output)
+static void blake2s_print(void *output)
 {
     uint32_t *digest = output;
     for (int i = 0; i < 8; ++i)
@@ -102,12 +102,12 @@ static void ft_blake2s_print(void *output)
     free(output);
 }
 
-static void *ft_blake2s(t_input *input)
+static void *blake2s(t_input *input)
 {
     uint32_t *digest = malloc(8 * sizeof(uint32_t));
     if (!digest)
     {
-        ft_print_error("blake2s", strerror(errno), NULL);
+        print_error("blake2s", strerror(errno), NULL);
         return (NULL);
     }
 
@@ -122,10 +122,10 @@ static void *ft_blake2s(t_input *input)
     ssize_t bytes_read = 0;
     ssize_t next_bytes_read = 0;
 
-    bytes_read = ft_read_from_input(input, block, 64);
+    bytes_read = read_from_input(input, block, 64);
     if (bytes_read == -1)
     {
-        ft_print_error("blake2s", strerror(errno), NULL);
+        print_error("blake2s", strerror(errno), NULL);
         free(digest);
         return (NULL);
     }
@@ -133,10 +133,10 @@ static void *ft_blake2s(t_input *input)
 
     while (bytes_read == 64)
     {
-        next_bytes_read = ft_read_from_input(input, next_block, 64);
+        next_bytes_read = read_from_input(input, next_block, 64);
         if (next_bytes_read == -1)
         {
-            ft_print_error("blake2s", strerror(errno), NULL);
+            print_error("blake2s", strerror(errno), NULL);
             free(digest);
             return (NULL);
         }
@@ -145,21 +145,21 @@ static void *ft_blake2s(t_input *input)
         if (!next_bytes_read)
             break;
 
-        ft_process_block(block, total_msg_size - next_bytes_read, digest, false);
+        process_block(block, total_msg_size - next_bytes_read, digest, false);
         ft_memcpy(block, next_block, 64);
         bytes_read = next_bytes_read;
     }
-    ft_blake2s_final(block, bytes_read, total_msg_size, digest);
+    blake2s_final(block, bytes_read, total_msg_size, digest);
 
     return (digest);
 }
 
-void ft_process_blake2s(const t_command *cmd, int argc, char **argv)
+void process_blake2s(const t_command *cmd, int argc, char **argv)
 {
-    t_context *ctx = ft_parse_digest(cmd, argc, argv);
-    ctx->digest.cmd_func = ft_blake2s;
-    ctx->digest.print_func = ft_blake2s_print;
+    t_context *ctx = parse_digest(cmd, argc, argv);
+    ctx->digest.cmd_func = blake2s;
+    ctx->digest.print_func = blake2s_print;
 
-    ft_process_digest(cmd, ctx);
+    process_digest(cmd, ctx);
     free(ctx);
 }

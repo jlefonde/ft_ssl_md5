@@ -1,16 +1,16 @@
-#include "ft_ssl.h"
+#include "ssl.h"
 
 static const t_category g_categories[] = {
     [CATEGORY_DIGEST] = { "Message Digest" }
 };
 
 static const t_command g_commands[] = {
-    { "md5", &g_categories[CATEGORY_DIGEST], ft_process_md5 },
-    { "sha256", &g_categories[CATEGORY_DIGEST], ft_process_sha256 },
-    { "blake2s", &g_categories[CATEGORY_DIGEST], ft_process_blake2s }
+    { "md5", &g_categories[CATEGORY_DIGEST], process_md5 },
+    { "sha256", &g_categories[CATEGORY_DIGEST], process_sha256 },
+    { "blake2s", &g_categories[CATEGORY_DIGEST], process_blake2s }
 };
 
-static const t_command *ft_get_command(char *cmd)
+static const t_command *get_command(char *cmd)
 {
     for (size_t i = 0; i < sizeof(g_commands)/sizeof(g_commands[0]); ++i)
     {
@@ -21,7 +21,7 @@ static const t_command *ft_get_command(char *cmd)
     return (NULL);
 }
 
-static void ft_helper(int fd)
+static void helper(int fd)
 {
     size_t categories_size = sizeof(g_categories)/sizeof(g_categories[0]);
     for (size_t i = 0; i < categories_size; ++i)
@@ -41,16 +41,16 @@ int main(int argc, char** argv)
 {
     if (argc < 2)
     {
-        ft_fprintf(STDERR_FILENO, "usage: ./ft_ssl <command> [options] [file/string]\n\n");
-        ft_helper(STDERR_FILENO);
+        ft_fprintf(STDERR_FILENO, "usage: ./ssl <command> [options] [file/string]\n\n");
+        helper(STDERR_FILENO);
         return (1);
     }
 
-    const t_command *cmd = ft_get_command(argv[1]);
+    const t_command *cmd = get_command(argv[1]);
     if (!cmd)
     {
-        ft_fprintf(STDERR_FILENO, "ft_ssl: '%s' is an invalid command\n\n", argv[1]);
-        ft_helper(STDERR_FILENO);
+        ft_fprintf(STDERR_FILENO, "ssl: '%s' is an invalid command\n\n", argv[1]);
+        helper(STDERR_FILENO);
         return (1);
     }
 

@@ -11,9 +11,9 @@
 # include <errno.h>
 
 # include "../libft/includes/libft.h"
-# include "ft_md5.h"
-# include "ft_sha256.h"
-# include "ft_blake2s.h"
+# include "md5.h"
+# include "sha256.h"
+# include "blake2s.h"
 
 typedef enum e_category_type
 {
@@ -61,16 +61,15 @@ typedef struct s_command
     void (*process_func)(const t_command *cmd, int argc, char **argv);
 }	t_command;
 
-// UTILS
-void ft_free_input(void *content);
-void ft_fatal_error(t_context *ctx, const char *s1, const char *s2, const char *s3);
-void ft_print_error(const char *s1, const char *s2, const char *s3);
-void ft_to_big_endian(uint64_t *value);
-uint32_t ft_rotate_left(uint32_t X, uint32_t N);
-uint32_t ft_rotate_right(uint32_t X, uint32_t N);
-ssize_t ft_read_from_input(t_input *input, void* buffer, size_t nbytes);
+void free_input(void *content);
+void fatal_error(t_context *ctx, const char *s1, const char *s2, const char *s3);
+void print_error(const char *s1, const char *s2, const char *s3);
+void to_big_endian(uint64_t *value);
+uint32_t rotate_left(uint32_t X, uint32_t N);
+uint32_t rotate_right(uint32_t X, uint32_t N);
+ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes);
 
-t_context *ft_parse_digest(const t_command *cmd, int argc, char **argv);
-void ft_process_digest(const t_command *cmd, t_context *ctx);
+t_context *parse_digest(const t_command *cmd, int argc, char **argv);
+void process_digest(const t_command *cmd, t_context *ctx);
 
 #endif

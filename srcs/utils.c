@@ -1,6 +1,6 @@
-#include "ft_ssl.h"
+#include "ssl.h"
 
-void ft_free_input(void *content)
+void free_input(void *content)
 {
     t_input *input = (t_input *)content;
 
@@ -11,21 +11,21 @@ void ft_free_input(void *content)
     free(input);
 }
 
-void ft_fatal_error(t_context *ctx, const char *s1, const char *s2, const char *s3)
+void fatal_error(t_context *ctx, const char *s1, const char *s2, const char *s3)
 {
-    ft_print_error(s1, s2, s3);
+    print_error(s1, s2, s3);
     if (ctx->digest.inputs)
-        ft_lstclear(&ctx->digest.inputs, ft_free_input);
+        ft_lstclear(&ctx->digest.inputs, free_input);
     free(ctx);
     exit(EXIT_FAILURE);
 }
 
-void ft_print_error(const char *s1, const char *s2, const char *s3)
+void print_error(const char *s1, const char *s2, const char *s3)
 {
     if (!s1 && !s2 && !s3)
         return ;
 
-    ft_fprintf(STDERR_FILENO, "ft_ssl");
+    ft_fprintf(STDERR_FILENO, "ssl");
     if (s1)
         ft_fprintf(STDERR_FILENO, ": %s", s1);
     if (s2)
@@ -35,17 +35,17 @@ void ft_print_error(const char *s1, const char *s2, const char *s3)
     ft_fprintf(STDERR_FILENO, "\n");
 }
 
-uint32_t ft_rotate_left(uint32_t X, uint32_t N)
+uint32_t rotate_left(uint32_t X, uint32_t N)
 {
     return ((X << N) | (X >> (32 - N)));
 }
 
-uint32_t ft_rotate_right(uint32_t X, uint32_t N)
+uint32_t rotate_right(uint32_t X, uint32_t N)
 {
     return ((X >> N) | (X << (32 - N)));
 }
 
-void ft_to_big_endian(uint64_t *value)
+void to_big_endian(uint64_t *value)
 {
     *value = ((*value >> 56) & 0x00000000000000FF) |
             ((*value >> 40) & 0x000000000000FF00) |
@@ -57,11 +57,11 @@ void ft_to_big_endian(uint64_t *value)
             ((*value << 56) & 0xFF00000000000000);
 }
 
-ssize_t ft_read_from_input(t_input *input, void* buffer, size_t nbytes)
+ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
     if (input->type == INPUT_STR)
     {
-        size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
+        size_t remaining_bytes = strlen(&input->str[input->str_pos]);
         if (!remaining_bytes)
             return (0);
 
@@ -77,10 +77,10 @@ ssize_t ft_read_from_input(t_input *input, void* buffer, size_t nbytes)
     {
         ((char*)buffer)[bytes_read] = '\0';
         if (!input->str)
-            input->str = ft_strdup(buffer);
+            input->str = strdup(buffer);
         else
         {
-            char *current_str = ft_strdup(input->str);
+            char *current_str = strdup(input->str);
             input->str = ft_strjoin(current_str, buffer);
             free(current_str);
         }

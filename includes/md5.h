@@ -1,7 +1,7 @@
-# ifndef FT_MD5_H
-#  define FT_MD5_H
+# ifndef MD5_H
+#  define MD5_H
 
-# include "ft_ssl.h"
+# include "ssl.h"
 
 typedef struct s_md5_round
 {
@@ -14,6 +14,6 @@ typedef struct s_md5_round
 
 typedef struct s_command t_command;
 
-void ft_process_md5(const t_command *cmd, int argc, char **argv);
+void process_md5(const t_command *cmd, int argc, char **argv);
 
 # endif

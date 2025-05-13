@@ -1,4 +1,4 @@
-#include "ft_ssl.h"
+#include "ssl.h"
 
 static uint32_t g_IV[8] = {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
@@ -15,47 +15,47 @@ static const uint32_t g_K[64] = {
     0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-static uint32_t ft_choose(uint32_t X, uint32_t Y, uint32_t Z)
+static uint32_t choose(uint32_t X, uint32_t Y, uint32_t Z)
 {
     return ((X & Y) ^ (~X & Z));
 }
 
-static uint32_t ft_majority(uint32_t X, uint32_t Y, uint32_t Z)
+static uint32_t majority(uint32_t X, uint32_t Y, uint32_t Z)
 {
     return ((X & Y) ^ (X & Z) ^ (Y & Z));
 }
 
-static uint32_t ft_big_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t r3)
+static uint32_t big_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t r3)
 {
-    return (ft_rotate_right(X, r1) ^ ft_rotate_right(X, r2) ^ ft_rotate_right(X, r3));
+    return (rotate_right(X, r1) ^ rotate_right(X, r2) ^ rotate_right(X, r3));
 }
 
-static uint32_t ft_small_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t s)
+static uint32_t small_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t s)
 {
-    return (ft_rotate_right(X, r1) ^ ft_rotate_right(X, r2) ^ (X >> s));
+    return (rotate_right(X, r1) ^ rotate_right(X, r2) ^ (X >> s));
 }
 
-static uint32_t ft_big_sigma_0(uint32_t X)
+static uint32_t big_sigma_0(uint32_t X)
 {
-    return (ft_big_sigma(X, 2, 13, 22));
+    return (big_sigma(X, 2, 13, 22));
 }
 
-static uint32_t ft_big_sigma_1(uint32_t X)
+static uint32_t big_sigma_1(uint32_t X)
 {
-    return (ft_big_sigma(X, 6, 11, 25));
+    return (big_sigma(X, 6, 11, 25));
 }
 
-static uint32_t ft_small_sigma_0(uint32_t X)
+static uint32_t small_sigma_0(uint32_t X)
 {
-    return (ft_small_sigma(X, 7, 18, 3));
+    return (small_sigma(X, 7, 18, 3));
 }
 
-static uint32_t ft_small_sigma_1(uint32_t X)
+static uint32_t small_sigma_1(uint32_t X)
 {
-    return (ft_small_sigma(X, 17, 19, 10));
+    return (small_sigma(X, 17, 19, 10));
 }
 
-static void ft_process_block(const uint8_t msg[64], uint32_t digest[8])
+static void process_block(const uint8_t msg[64], uint32_t digest[8])
 {
     uint32_t w[64];
 
@@ -68,7 +68,7 @@ static void ft_process_block(const uint8_t msg[64], uint32_t digest[8])
             w[i] = (msg[j] << 24) | (msg[j + 1] << 16) | (msg[j + 2] << 8) | msg[j + 3];
         }
         else
-            w[i] = ft_small_sigma_1(w[i - 2]) + w[i - 7] + ft_small_sigma_0(w[i - 15]) + w[i - 16];
+            w[i] = small_sigma_1(w[i - 2]) + w[i - 7] + small_sigma_0(w[i - 15]) + w[i - 16];
     }
 
     uint32_t A = digest[0];
@@ -81,8 +81,8 @@ static void ft_process_block(const uint8_t msg[64], uint32_t digest[8])
     uint32_t H = digest[7];
     for (int i = 0; i < 64; ++i)
     {
-        uint32_t T1 = H + ft_big_sigma_1(E) + ft_choose(E, F, G) + g_K[i] + w[i];
-        uint32_t T2 = ft_big_sigma_0(A) + ft_majority(A, B, C);
+        uint32_t T1 = H + big_sigma_1(E) + choose(E, F, G) + g_K[i] + w[i];
+        uint32_t T2 = big_sigma_0(A) + majority(A, B, C);
         H = G;
         G = F;
         F = E;
@@ -103,7 +103,7 @@ static void ft_process_block(const uint8_t msg[64], uint32_t digest[8])
     digest[7] += H;
 }
 
-static void ft_process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
+static void process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
 {
     uint8_t block[64];
     int i = 0;
@@ -112,34 +112,34 @@ static void ft_process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32
         block[i++] = 0x80;
 
     ft_memset(&block[i], 0, 56 - i);
-    ft_to_big_endian(&msg_size);
+    to_big_endian(&msg_size);
     ft_memcpy(&block[56], &msg_size, 8);
-    ft_process_block(block, digest);
+    process_block(block, digest);
 }
 
-static void ft_sha256_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
+static void sha256_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])
 {
     block[bytes_read++] = 0x80;
 
     if (bytes_read < 56)
     {
         ft_memset(&block[bytes_read], 0x00, 56 - bytes_read);
-        ft_to_big_endian(&msg_size);
+        to_big_endian(&msg_size);
         ft_memcpy(&block[56], &msg_size, 8);
-        ft_process_block(block, digest);
+        process_block(block, digest);
     }
     else
     {
         if (bytes_read > 0)
         {
             ft_memset(&block[bytes_read], 0x00, 64 - bytes_read);
-            ft_process_block(block, digest);
+            process_block(block, digest);
         }
-        ft_process_final_block(bytes_read, msg_size, digest);
+        process_final_block(bytes_read, msg_size, digest);
     }
 }
 
-static void ft_sha256_print(void *output)
+static void sha256_print(void *output)
 {
     uint32_t *digest = output;
     for (int i = 0; i < 8; ++i)
@@ -147,12 +147,12 @@ static void ft_sha256_print(void *output)
     free(output);
 }
 
-static void *ft_sha256(t_input *input)
+static void *sha256(t_input *input)
 {
     uint32_t *digest = malloc(8 * sizeof(uint32_t));
     if (!digest)
     {
-        ft_print_error("sha256", strerror(errno), NULL);
+        print_error("sha256", strerror(errno), NULL);
         return (NULL);
     }
 
@@ -162,22 +162,22 @@ static void *ft_sha256(t_input *input)
     uint8_t block[64];
     ssize_t total_msg_size = 0;
     ssize_t bytes_read = 0;
-    while ((bytes_read = ft_read_from_input(input, block, 64)) >= 0)
+    while ((bytes_read = read_from_input(input, block, 64)) >= 0)
     {
         total_msg_size += bytes_read;
 
         if (bytes_read == 64)
-            ft_process_block(block, digest);
+            process_block(block, digest);
         else
         {
-            ft_sha256_final(block, bytes_read, total_msg_size * 8, digest);
+            sha256_final(block, bytes_read, total_msg_size * 8, digest);
             break;
         }
     }
 
     if (bytes_read == -1)
     {
-        ft_print_error("sha256", strerror(errno), NULL);
+        print_error("sha256", strerror(errno), NULL);
         free(digest);
         return (NULL);
     }
@@ -185,12 +185,12 @@ static void *ft_sha256(t_input *input)
     return (digest);
 }
 
-void ft_process_sha256(const t_command *cmd, int argc, char **argv)
+void process_sha256(const t_command *cmd, int argc, char **argv)
 {
-    t_context *ctx = ft_parse_digest(cmd, argc, argv);
-    ctx->digest.cmd_func = ft_sha256;
-    ctx->digest.print_func = ft_sha256_print;
+    t_context *ctx = parse_digest(cmd, argc, argv);
+    ctx->digest.cmd_func = sha256;
+    ctx->digest.print_func = sha256_print;
 
-    ft_process_digest(cmd, ctx);
+    process_digest(cmd, ctx);
     free(ctx);
 }

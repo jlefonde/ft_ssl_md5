@@ -4,12 +4,12 @@ SOURCES_DIR = srcs
 HEADERS_DIR = includes
 OBJECTS_DIR = objs
 
-SOURCES = ft_ssl.c \
-			ft_utils.c \
-            ft_digest.c \
-			ft_md5.c \
-			ft_sha256.c \
-			ft_blake2s.c
+SOURCES = ssl.c \
+			utils.c \
+            digest.c \
+			md5.c \
+			sha256.c \
+			blake2s.c
 
 OBJECTS = $(addprefix $(OBJECTS_DIR)/, $(SOURCES:.c=.o))
 
