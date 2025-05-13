@@ -1,5 +1,9 @@
 #include "ft_ssl.h"
 
+static uint32_t g_IV[8] = {
+    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+};
+
 static const uint32_t g_K[64] = {
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
     0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -149,14 +153,8 @@ static void *ft_sha256(t_input *input)
     if (!digest)
         return (NULL);
 
-    digest[0] = 0x6a09e667; 
-    digest[1] = 0xbb67ae85;
-    digest[2] = 0x3c6ef372;
-    digest[3] = 0xa54ff53a;
-    digest[4] = 0x510e527f;
-    digest[5] = 0x9b05688c;
-    digest[6] = 0x1f83d9ab;
-    digest[7] = 0x5be0cd19;
+    for (int i = 0; i < 8; ++i)
+        digest[i] = g_IV[i];
 
     uint8_t block[64];
     ssize_t total_msg_size = 0;
