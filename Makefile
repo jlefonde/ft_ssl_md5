@@ -13,10 +13,10 @@ SOURCES = ssl.c \
 
 OBJECTS = $(addprefix $(OBJECTS_DIR)/, $(SOURCES:.c=.o))
 
-CFLAGS = -I$(HEADERS_DIR) #-Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -I$(HEADERS_DIR)
 LDFLAGS = -L./libft -lft
 
-all: libft $(NAME)
+all: ./libft/libft.a $(NAME)
 
 $(NAME): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
@@ -29,10 +29,11 @@ clean:
 	$(RM) -rf $(OBJECTS_DIR)
 
 fclean: clean
+	$(RM) -f $(NAME)
 
 re: fclean all
 
-libft:
+./libft/libft.a:
 	make bonus -C ./libft
 
-.PHONY: all clean fclean re libft
+.PHONY: all clean fclean re
