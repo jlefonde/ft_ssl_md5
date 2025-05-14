@@ -35,12 +35,12 @@ void print_error(const char *s1, const char *s2, const char *s3)
     ft_fprintf(STDERR_FILENO, "\n");
 }
 
-uint32_t rotate_left(uint32_t X, uint32_t N)
+uint32_t rotate_left_32(uint32_t X, uint32_t N)
 {
     return ((X << N) | (X >> (32 - N)));
 }
 
-uint32_t rotate_right(uint32_t X, uint32_t N)
+uint32_t rotate_right_32(uint32_t X, uint32_t N)
 {
     return ((X >> N) | (X << (32 - N)));
 }

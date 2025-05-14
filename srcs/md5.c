@@ -12,10 +12,10 @@ static const uint32_t g_T[64] = {
 };
 
 static const uint32_t g_S[4][4] = {
-    {7, 12, 17, 22},
-    {5,  9, 14, 20},
-    {4, 11, 16, 23},
-    {6, 10, 15, 21}
+    { 7, 12, 17, 22 },
+    { 5,  9, 14, 20 },
+    { 4, 11, 16, 23 },
+    { 6, 10, 15, 21 }
 };
 
 static uint32_t F(uint32_t X, uint32_t Y, uint32_t Z)
@@ -43,7 +43,7 @@ static uint32_t process_round(t_md5_round md5_round, uint32_t func_result, int i
     uint32_t sum = md5_round.A + func_result + md5_round.w[j] + g_T[i];
     uint32_t shift = g_S[(i / 16)][(i % 4)];
 
-    return md5_round.B + rotate_left(sum, shift);
+    return md5_round.B + rotate_left_32(sum, shift);
 }
 
 static uint32_t md5_round_1(t_md5_round md5_round, int i)

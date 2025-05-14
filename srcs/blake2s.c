@@ -1,10 +1,10 @@
 #include "ssl.h"
 
-static uint32_t g_IV[8] = {
+static const uint32_t g_IV[8] = {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
 };
 
-static size_t g_SIGMA[10][16] = {
+static const size_t g_SIGMA[10][16] = {
     {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 },
     { 14, 10,  4,  8,  9, 15, 13,  6,  1, 12,  0,  2, 11,  7,  5,  3 },
     { 11,  8, 12,  0,  5,  2, 15, 13, 10, 14,  3,  6,  7,  1,  9,  4 },
@@ -17,7 +17,7 @@ static size_t g_SIGMA[10][16] = {
     { 10,  2,  8,  4,  7,  6,  1,  5, 15, 11,  9, 14,  3, 12, 13,  0 }
 };
 
-static size_t g_index[8][4] = {
+static const size_t g_index[8][4] = {
     { 0, 4,  8, 12 },
     { 1, 5,  9, 13 },
     { 2, 6, 10, 14 },
@@ -28,7 +28,7 @@ static size_t g_index[8][4] = {
     { 3, 4,  9, 14 }
 };
 
-static void G(uint32_t v[16], size_t index[4], uint32_t x, uint32_t y)
+static void G(uint32_t v[16], const size_t index[4], uint32_t x, uint32_t y)
 {
     size_t a = index[0];
     size_t b = index[1];
@@ -36,13 +36,13 @@ static void G(uint32_t v[16], size_t index[4], uint32_t x, uint32_t y)
     size_t d = index[3];
 
     v[a] = (v[a] + v[b] + x) % 4294967296;
-    v[d] = rotate_right(v[d] ^ v[a], 16);
+    v[d] = rotate_right_32(v[d] ^ v[a], 16);
     v[c] = (v[c] + v[d]) % 4294967296;
-    v[b] = rotate_right(v[b] ^ v[c], 12);
+    v[b] = rotate_right_32(v[b] ^ v[c], 12);
     v[a] = (v[a] + v[b] + y) % 4294967296;
-    v[d] = rotate_right(v[d] ^ v[a], 8);
+    v[d] = rotate_right_32(v[d] ^ v[a], 8);
     v[c] = (v[c] + v[d]) % 4294967296;
-    v[b] = rotate_right(v[b] ^ v[c], 7);
+    v[b] = rotate_right_32(v[b] ^ v[c], 7);
 }
 
 static void F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read, bool final)
@@ -60,10 +60,7 @@ static void F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read,
 
     for (int i = 0; i < 10; ++i)
     {
-        uint32_t s[16];
-
-        for (int j = 0; j < 16; ++j)
-            s[j] = g_SIGMA[i % 10][j];
+        const size_t *s = g_SIGMA[i % 10];
 
         for (int j = 0, k = 0; j < 8; ++j, k += 2)
             G(v, g_index[j], block[s[k]], block[s[k + 1]]);
@@ -74,7 +71,7 @@ static void F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read,
 }
 
 static void process_block(const uint8_t msg[64], uint64_t msg_size, uint32_t digest[8], bool final)
-{    
+{
     uint32_t w[16];
 
     for (int i = 0; i < 16; ++i)

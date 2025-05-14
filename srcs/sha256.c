@@ -1,6 +1,6 @@
 #include "ssl.h"
 
-static uint32_t g_IV[8] = {
+static const uint32_t g_IV[8] = {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
 };
 
@@ -27,12 +27,12 @@ static uint32_t majority(uint32_t X, uint32_t Y, uint32_t Z)
 
 static uint32_t big_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t r3)
 {
-    return (rotate_right(X, r1) ^ rotate_right(X, r2) ^ rotate_right(X, r3));
+    return (rotate_right_32(X, r1) ^ rotate_right_32(X, r2) ^ rotate_right_32(X, r3));
 }
 
 static uint32_t small_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t s)
 {
-    return (rotate_right(X, r1) ^ rotate_right(X, r2) ^ (X >> s));
+    return (rotate_right_32(X, r1) ^ rotate_right_32(X, r2) ^ (X >> s));
 }
 
 static uint32_t big_sigma_0(uint32_t X)

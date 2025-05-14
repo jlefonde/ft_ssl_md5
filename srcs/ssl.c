@@ -37,7 +37,7 @@ static void helper(int fd)
     }
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     if (argc < 2)
     {
