@@ -115,7 +115,7 @@ t_context *parse_digest(const t_command *cmd, int argc, char **argv)
             t_input *input = (t_input *)malloc(sizeof(t_input));
 
             input->type = sum_mode ? INPUT_STR : INPUT_FILE;
-            input->str = strdup(argv[i]);
+            input->str = ft_strdup(argv[i]);
             input->fd = -1;
             input->str_pos = 0;
 

@@ -61,7 +61,7 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
     if (input->type == INPUT_STR)
     {
-        size_t remaining_bytes = strlen(&input->str[input->str_pos]);
+        size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
         if (!remaining_bytes)
             return (0);
 
@@ -77,12 +77,12 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
     {
         ((char*)buffer)[bytes_read] = '\0';
         if (!input->str)
-            input->str = strdup(buffer);
+            input->str = ft_strdup(buffer);
         else
         {
-            char *current_str = strdup(input->str);
-            input->str = ft_strjoin(current_str, buffer);
-            free(current_str);
+            char *joined = ft_strjoin(input->str, buffer);
+            free(input->str);
+            input->str = joined;
         }
     }
     return (bytes_read);
