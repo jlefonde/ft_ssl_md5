@@ -143,7 +143,7 @@ static void sha256_print(void *output)
 {
     uint32_t *digest = output;
     for (int i = 0; i < 8; ++i)
-        printf("%08x", digest[i]);
+        ft_printf("%08x", digest[i]);
     free(output);
 }
 

@@ -31,10 +31,8 @@ static void	ft_putf(char *format, va_list args, int *len, int *i)
 		*len += ft_putnbr(va_arg(args, int), 1);
 	else if (format[0] == 'u')
 		*len += ft_putnbr(va_arg(args, unsigned int), 0);
-	else if (format[0] == 'x')
-		*len += ft_puthex((unsigned int)va_arg(args, int), 0);
-	else if (format[0] == 'X')
-		*len += ft_puthex((unsigned int)va_arg(args, int), 1);
+	else if (format[0] == 'x' || format[0] == 'X')
+		*len += ft_puthex((unsigned int)va_arg(args, int), format[0] == 'X');
 	else if (format[0] == '%')
 		*len += ft_putchar('%');
 	else if (format[0] == ' ' && ft_inset(format[1], "di"))
@@ -43,6 +41,8 @@ static void	ft_putf(char *format, va_list args, int *len, int *i)
 		ft_put_plus(args, len, i);
 	else if (format[0] == '#' && ft_inset(format[1], "xX"))
 		ft_put_sharp(args, len, i, format[1]);
+	else if (format[0] == '0')
+		ft_put_zero(args, len, i, format);
 }
 
 /**

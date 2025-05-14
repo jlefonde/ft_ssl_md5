@@ -84,6 +84,7 @@ long	ft_atol(const char *nptr);
 void				ft_put_space(va_list args, int *len, int *i);
 void				ft_put_plus(va_list args, int *len, int *i);
 void				ft_put_sharp(va_list args, int *len, int *i, char c);
+void                ft_put_zero(va_list args, int *len, int *i, char *format);
 int					ft_putchar(char c);
 int					ft_putstr(char *s);
 int					ft_putnbr(long long n, int is_signed);

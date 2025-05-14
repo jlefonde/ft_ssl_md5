@@ -98,7 +98,7 @@ static void blake2s_print(void *output)
     uint32_t *digest = output;
     for (int i = 0; i < 8; ++i)
         for (int j = 0; j < 4; ++j)
-            printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
+            ft_printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
     free(output);
 }
 

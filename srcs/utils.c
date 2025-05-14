@@ -25,7 +25,7 @@ void print_error(const char *s1, const char *s2, const char *s3)
     if (!s1 && !s2 && !s3)
         return ;
 
-    ft_fprintf(STDERR_FILENO, "ssl");
+    ft_fprintf(STDERR_FILENO, "ft_ssl");
     if (s1)
         ft_fprintf(STDERR_FILENO, ": %s", s1);
     if (s2)
