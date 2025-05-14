@@ -59,7 +59,7 @@ void to_big_endian(uint64_t *value)
 
 ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
-    if (input->type == INPUT_STR)
+    if (input->type == INPUT_STR || input->type == INPUT_STDIN)
     {
         size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
         if (!remaining_bytes)
@@ -71,19 +71,5 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 
         return (to_copy);
     }
-
-    ssize_t bytes_read = read(input->fd, buffer, nbytes);
-    if (input->type == INPUT_STDIN)
-    {
-        ((char*)buffer)[bytes_read] = '\0';
-        if (!input->str)
-            input->str = ft_strdup(buffer);
-        else
-        {
-            char *joined = ft_strjoin(input->str, buffer);
-            free(input->str);
-            input->str = joined;
-        }
-    }
-    return (bytes_read);
+    return (read(input->fd, buffer, nbytes));
 }

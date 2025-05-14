@@ -41,20 +41,40 @@ static void print_normal_mode(const t_command *cmd, t_context *ctx, t_input *inp
     ft_printf("\n");
 }
 
-void handle_stdin_input(int argc, t_context *ctx, bool file_found)
+static void handle_stdin_input(const t_command *cmd, int argc, t_context *ctx, bool file_found)
 {
     bool any_flags = (ctx->digest.reverse_mode || ctx->digest.quiet_mode || ctx->digest.stdin_mode || ctx->digest.sum_mode);
     bool has_input = ft_lstsize(ctx->digest.inputs) > 0;
-    
+
     if ((argc == 2 || ctx->digest.stdin_mode || !has_input) && (!file_found || any_flags))
     {
         t_input *input = (t_input *)malloc(sizeof(t_input));
-        
+        if (!input)
+            fatal_error(ctx, cmd->name, strerror(errno), NULL);
+
         input->type = INPUT_STDIN;
         input->fd = STDIN_FILENO;
         input->str = NULL;
         input->str_pos = 0;
-        
+
+        ssize_t bytes_read = 0;
+        char buffer[1024];
+        while ((bytes_read = read(input->fd, buffer, 1024)))
+        {
+            buffer[bytes_read] = 0;
+            if (!input->str)
+                input->str = ft_strdup(buffer);
+            else
+            {
+                char *joined = ft_strjoin(input->str, buffer);
+                free(input->str);
+                input->str = joined;
+            }
+        }
+
+        if (bytes_read == -1)
+            fatal_error(ctx, cmd->name, strerror(errno), NULL);
+
         ft_lstadd_front(&ctx->digest.inputs, ft_lstnew(input));
     }
 }
@@ -113,6 +133,8 @@ t_context *parse_digest(const t_command *cmd, int argc, char **argv)
         else
         {
             t_input *input = (t_input *)malloc(sizeof(t_input));
+            if (!input)
+                fatal_error(ctx, cmd->name, strerror(errno), NULL);
 
             input->type = sum_mode ? INPUT_STR : INPUT_FILE;
             input->str = ft_strdup(argv[i]);
@@ -131,7 +153,7 @@ t_context *parse_digest(const t_command *cmd, int argc, char **argv)
     if (sum_mode)
         fatal_error(ctx, cmd->name, NULL, "Option -s needs a value");
 
-    handle_stdin_input(argc, ctx, file_found);
+    handle_stdin_input(cmd, argc, ctx, file_found);
 
     return (ctx);
 }
@@ -145,23 +167,20 @@ void process_digest(const t_command *cmd, t_context *ctx)
     {
         next = current->next;
         t_input *input = current->content;
-        if (input)
+        if (input->type == INPUT_FILE)
         {
-            if (input->type == INPUT_FILE)
+            input->fd = open(input->str, O_RDONLY);
+            if (input->fd == -1)
             {
-                input->fd = open(input->str, O_RDONLY);
-                if (input->fd == -1)
-                {
-                    print_error(cmd->name, input->str, strerror(errno));
-                    free_input(input);
-                    free(current);
-                    current = next;
-                    continue;
-                }
+                print_error(cmd->name, input->str, strerror(errno));
+                free_input(input);
+                free(current);
+                current = next;
+                continue;
             }
-            process_cmd(cmd, ctx, input);
-            free_input(input);
         }
+        process_cmd(cmd, ctx, input);
+        free_input(input);
         free(current);
         current = next;
     }
