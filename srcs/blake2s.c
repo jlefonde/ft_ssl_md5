@@ -45,7 +45,7 @@ static void G(uint32_t v[16], const size_t index[4], uint32_t x, uint32_t y)
     v[b] = ft_rotate_right_32(v[b] ^ v[c], 7);
 }
 
-static void F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read, bool final)
+static void F(uint32_t w[16], uint32_t digest[8], uint64_t total_bytes_read, bool final)
 {
     uint32_t v[16];
 
@@ -63,14 +63,14 @@ static void F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read,
         const size_t *s = g_SIGMA[i % 10];
 
         for (int j = 0, k = 0; j < 8; ++j, k += 2)
-            G(v, g_index[j], block[s[k]], block[s[k + 1]]);
+            G(v, g_index[j], w[s[k]], w[s[k + 1]]);
     }
 
     for (int i = 0; i < 8; ++i)
         digest[i] ^= v[i] ^ v[i + 8];
 }
 
-static void process_block(const uint8_t msg[64], uint64_t msg_size, uint32_t digest[8], bool final)
+static void process_block(const uint8_t block[64], uint64_t total_bytes_read, uint32_t digest[8], bool final)
 {
     uint32_t w[16];
 
@@ -78,10 +78,10 @@ static void process_block(const uint8_t msg[64], uint64_t msg_size, uint32_t dig
     {
         int j = i * 4;
 
-        w[i] = msg[j] | msg[j + 1] << 8 | msg[j + 2] << 16 | msg[j + 3] << 24;
+        w[i] = block[j] | block[j + 1] << 8 | block[j + 2] << 16 | block[j + 3] << 24;
     }
 
-    F(w, digest, msg_size, final);
+    F(w, digest, total_bytes_read, final);
 }
 
 static void blake2s_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, uint32_t digest[8])

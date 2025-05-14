@@ -81,7 +81,7 @@ static uint32_t (*md5_rounds[4])(t_md5_round md5_round, int i) = {
     md5_round_4
 };
 
-static void process_block(const uint8_t msg[64], uint32_t digest[4])
+static void process_block(const uint8_t block[64], uint32_t digest[4])
 {
     t_md5_round md5_round;
 
@@ -89,7 +89,7 @@ static void process_block(const uint8_t msg[64], uint32_t digest[4])
     {
         int j = i * 4;
 
-        md5_round.w[i] = msg[j] | msg[j + 1] << 8 | msg[j + 2] << 16 | msg[j + 3] << 24;
+        md5_round.w[i] = block[j] | block[j + 1] << 8 | block[j + 2] << 16 | block[j + 3] << 24;
     }
 
     md5_round.A = digest[0];

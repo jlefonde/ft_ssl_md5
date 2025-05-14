@@ -55,7 +55,7 @@ static uint32_t small_sigma_1(uint32_t X)
     return (small_sigma(X, 17, 19, 10));
 }
 
-static void process_block(const uint8_t msg[64], uint32_t digest[8])
+static void process_block(const uint8_t block[64], uint32_t digest[8])
 {
     uint32_t w[64];
 
@@ -65,7 +65,7 @@ static void process_block(const uint8_t msg[64], uint32_t digest[8])
         {
             int j = i * 4;
 
-            w[i] = (msg[j] << 24) | (msg[j + 1] << 16) | (msg[j + 2] << 8) | msg[j + 3];
+            w[i] = (block[j] << 24) | (block[j + 1] << 16) | (block[j + 2] << 8) | block[j + 3];
         }
         else
             w[i] = small_sigma_1(w[i - 2]) + w[i - 7] + small_sigma_0(w[i - 15]) + w[i - 16];
