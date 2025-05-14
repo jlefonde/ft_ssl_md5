@@ -18,24 +18,24 @@ static const uint32_t g_S[4][4] = {
     { 6, 10, 15, 21 }
 };
 
-static uint32_t F(uint32_t X, uint32_t Y, uint32_t Z)
+static uint32_t F(uint32_t x, uint32_t y, uint32_t z)
 {
-    return ((X & Y) | (~X & Z));
+    return ((x & y) | (~x & z));
 }
 
-static uint32_t G(uint32_t X, uint32_t Y, uint32_t Z)
+static uint32_t G(uint32_t x, uint32_t y, uint32_t z)
 {
-    return ((X & Z) | (Y & ~Z));
+    return ((x & z) | (y & ~z));
 }
 
-static uint32_t H(uint32_t X, uint32_t Y, uint32_t Z)
+static uint32_t H(uint32_t x, uint32_t y, uint32_t z)
 {
-    return (X ^ Y ^ Z);
+    return (x ^ y ^ z);
 }
 
-static uint32_t I(uint32_t X, uint32_t Y, uint32_t Z)
+static uint32_t I(uint32_t x, uint32_t y, uint32_t z)
 {
-    return (Y ^ (X | ~Z));
+    return (y ^ (x | ~z));
 }
 
 static uint32_t process_round(t_md5_round md5_round, uint32_t func_result, int i, int j)
