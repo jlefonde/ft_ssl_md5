@@ -46,6 +46,13 @@ SOURCES = ft_isalpha.c \
     ft_inset.c \
     ft_count_words.c \
     ft_atol.c \
+    ft_bswap16.c \
+    ft_bswap32.c \
+    ft_bswap64.c \
+    ft_rotate_left_32.c \
+    ft_rotate_left_64.c \
+    ft_rotate_right_32.c \
+    ft_rotate_right_64.c \
     ft_printf/ft_printf.c \
     ft_printf/ft_put.c \
     ft_printf/ft_put_flags.c \

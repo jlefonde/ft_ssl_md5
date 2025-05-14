@@ -27,12 +27,12 @@ static uint32_t majority(uint32_t X, uint32_t Y, uint32_t Z)
 
 static uint32_t big_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t r3)
 {
-    return (rotate_right_32(X, r1) ^ rotate_right_32(X, r2) ^ rotate_right_32(X, r3));
+    return (ft_rotate_right_32(X, r1) ^ ft_rotate_right_32(X, r2) ^ ft_rotate_right_32(X, r3));
 }
 
 static uint32_t small_sigma(uint32_t X, uint32_t r1, uint32_t r2, uint32_t s)
 {
-    return (rotate_right_32(X, r1) ^ rotate_right_32(X, r2) ^ (X >> s));
+    return (ft_rotate_right_32(X, r1) ^ ft_rotate_right_32(X, r2) ^ (X >> s));
 }
 
 static uint32_t big_sigma_0(uint32_t X)
@@ -112,8 +112,8 @@ static void process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32_t 
         block[i++] = 0x80;
 
     ft_memset(&block[i], 0, 56 - i);
-    to_big_endian(&msg_size);
-    ft_memcpy(&block[56], &msg_size, 8);
+    uint64_t msg_size_be = ft_bswap64(msg_size);
+    ft_memcpy(&block[56], &msg_size_be, 8);
     process_block(block, digest);
 }
 
@@ -124,8 +124,8 @@ static void sha256_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_siz
     if (bytes_read < 56)
     {
         ft_memset(&block[bytes_read], 0x00, 56 - bytes_read);
-        to_big_endian(&msg_size);
-        ft_memcpy(&block[56], &msg_size, 8);
+        uint64_t msg_size_be = ft_bswap64(msg_size);
+        ft_memcpy(&block[56], &msg_size_be, 8);
         process_block(block, digest);
     }
     else

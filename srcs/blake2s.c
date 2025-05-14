@@ -36,13 +36,13 @@ static void G(uint32_t v[16], const size_t index[4], uint32_t x, uint32_t y)
     size_t d = index[3];
 
     v[a] = (v[a] + v[b] + x) % 4294967296;
-    v[d] = rotate_right_32(v[d] ^ v[a], 16);
+    v[d] = ft_rotate_right_32(v[d] ^ v[a], 16);
     v[c] = (v[c] + v[d]) % 4294967296;
-    v[b] = rotate_right_32(v[b] ^ v[c], 12);
+    v[b] = ft_rotate_right_32(v[b] ^ v[c], 12);
     v[a] = (v[a] + v[b] + y) % 4294967296;
-    v[d] = rotate_right_32(v[d] ^ v[a], 8);
+    v[d] = ft_rotate_right_32(v[d] ^ v[a], 8);
     v[c] = (v[c] + v[d]) % 4294967296;
-    v[b] = rotate_right_32(v[b] ^ v[c], 7);
+    v[b] = ft_rotate_right_32(v[b] ^ v[c], 7);
 }
 
 static void F(uint32_t block[16], uint32_t digest[8], uint64_t total_bytes_read, bool final)

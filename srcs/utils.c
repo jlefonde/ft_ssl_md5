@@ -35,28 +35,6 @@ void print_error(const char *s1, const char *s2, const char *s3)
     ft_fprintf(STDERR_FILENO, "\n");
 }
 
-uint32_t rotate_left_32(uint32_t X, uint32_t N)
-{
-    return ((X << N) | (X >> (32 - N)));
-}
-
-uint32_t rotate_right_32(uint32_t X, uint32_t N)
-{
-    return ((X >> N) | (X << (32 - N)));
-}
-
-void to_big_endian(uint64_t *value)
-{
-    *value = ((*value >> 56) & 0x00000000000000FF) |
-            ((*value >> 40) & 0x000000000000FF00) |
-            ((*value >> 24) & 0x0000000000FF0000) |
-            ((*value >> 8)  & 0x00000000FF000000) |
-            ((*value << 8)  & 0x000000FF00000000) |
-            ((*value << 24) & 0x0000FF0000000000) |
-            ((*value << 40) & 0x00FF000000000000) |
-            ((*value << 56) & 0xFF00000000000000);
-}
-
 ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
     if (input->type == INPUT_STR || input->type == INPUT_STDIN)
