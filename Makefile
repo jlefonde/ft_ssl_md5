@@ -37,4 +37,9 @@ re: fclean all
 ./libft/libft.a:
 	make bonus -C ./libft
 
+tester:
+	@git clone https://github.com/bats-core/bats-core.git test/bats
+	@git clone https://github.com/bats-core/bats-support.git test/test_helper/bats-support
+	@git clone https://github.com/bats-core/bats-assert.git test/test_helper/bats-assert
+
 .PHONY: all clean fclean re
