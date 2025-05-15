@@ -111,12 +111,12 @@ static void process_block(const uint8_t block[64], uint32_t digest[4])
     digest[3] += md5_round.D;
 }
 
-static void process_final_block(ssize_t bytes_read, uint64_t msg_size, uint32_t digest[4])
+static void process_final_block(bool bit_1_appended, uint64_t msg_size, uint32_t digest[4])
 {
     uint8_t block[64];
     int i = 0;
 
-    if (!bytes_read)
+    if (!bit_1_appended)
         block[i++] = 0x80;
 
     ft_memset(&block[i], 0x00, 56 - i);
@@ -141,7 +141,7 @@ static void md5_final(uint8_t block[64], ssize_t bytes_read, uint64_t msg_size, 
            ft_memset(&block[bytes_read], 0x00, 64 - bytes_read);
            process_block(block, digest);
         }
-        process_final_block(bytes_read, msg_size, digest);
+        process_final_block(bytes_read > 0, msg_size, digest);
     }
 }
 

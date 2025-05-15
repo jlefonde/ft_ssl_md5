@@ -39,6 +39,8 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
     if (input->type == INPUT_STR || input->type == INPUT_STDIN)
     {
+        if (!input->str)
+            return (0);
         size_t remaining_bytes = ft_strlen(&input->str[input->str_pos]);
         if (!remaining_bytes)
             return (0);
