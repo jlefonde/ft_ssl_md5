@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 
 files=("1B" "56B" "57B" "63B" "64B" "65B" "100B" "128B" "50MB")
+file_sizes=("1c" "56c" "57c" "63c" "64c" "65c" "100c" "128c" "50MB")
 
 setup() {
     load "test_helper/bats-support/load"
@@ -10,7 +11,7 @@ setup() {
     echo "" > 0B
 
     for file in ${files[@]}; do
-        dd if=/dev/urandom of=$file bs=$file count=1
+        dd if=/dev/urandom of=$file bs=$file_sizes count=1 > /dev/null 2>&1
     done
 }
 

@@ -20,4 +20,4 @@ echo -e "${BGREEN}             \ \ \_  /\  __/  /\__   \ \ \ \_  /\  __/ \ \ \/ 
 echo -e "${BGREEN}              \ \__\ \ \____\ \/\____/  \ \__\ \ \____\ \ \_\  ${RESET}"
 echo -e "${BGREEN}               \/__/  \/____/  \/___/    \/__/  \/____/  \/_/  ${RESET}\n"
 
-./test/bats/bin/bats test/ft_ssl_md5.bats --filter-tags openssl
+./test/bats/bin/bats test/ft_ssl_md5.bats
