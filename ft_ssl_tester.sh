@@ -27,13 +27,14 @@ echo -e "${BGREEN}              \ \__\ \ \____\ \/\____/  \ \__\ \ \____\ \ \_\ 
 echo -e "${BGREEN}               \/__/  \/____/  \/___/    \/__/  \/____/  \/_/  ${RESET}"
 echo -e "${BGREEN}_________________________________________________________________${RESET}\n"
 
+projects=("ft_ssl_md5" "ft_ssl_des" "ft_ssl_rsa")
 options=("--filter-tags")
 
 helper() {
     echo -e "usage: ./ft_ssl_tester.sh <project> [options]\n"
     echo -e "project:"
-    for file in test/*.bats; do
-        echo -e " $(basename "$file" .bats)"
+    for project in ${projects[@]}; do
+        echo -e " $project"
     done
     echo -e "\noptions:"
     echo -e " --filter-tags <comma-separated-tag-list>"
@@ -46,6 +47,20 @@ helper_filter_tags() {
 }
 
 if [ -z $1 ]; then
+    helper
+    exit 1
+fi
+
+is_valid_project=false
+for project in "${projects[@]}"; do
+    if [ "$1" == "$project" ]; then
+        is_valid_project=true
+        break
+    fi
+done
+
+if [ "$is_valid_project" = false ]; then
+    echo -e "${BRED}ERROR: Unknown project \"$1\"${RESET}"
     helper
     exit 1
 fi
@@ -73,14 +88,14 @@ if [ ! -z $2 ]; then
     fi
 fi
 
-if [ "$2" = "--filter-tags" ]  && [ -z $3 ]; then
+if [ "$2" = "--filter-tags" ]  && [ -z "$3" ]; then
     helper_filter_tags $1
     exit 1
 fi
 
-if [ "$2" = "--filter-tags" ] && [ ! -z $3 ]; then
-    echo -e "${BBLUE}Running tests with tag(s): $3${RESET}"
-    ./test/bats/bin/bats $project_test_file --filter-tags $3
+if [ "$2" = "--filter-tags" ] && [ ! -z "$3" ]; then
+    echo -e "${BBLUE}Running tests with tag(s): "$3"${RESET}"
+    ./test/bats/bin/bats $project_test_file --filter-tags "$3"
 else
     ./test/bats/bin/bats $project_test_file
 fi

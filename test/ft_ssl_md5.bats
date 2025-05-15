@@ -5,14 +5,14 @@ setup() {
     load "test_helper/bats-assert/load"
 }
 
-declare -A files=( ["1B"]="1" ["56B"]="56" ["57B"]="57" ["63B"]="63" ["64B"]="64" ["65B"]="65" ["100B"]="100" ["128B"]="128" ["50MB"]="50MB" )
+declare -gA files=( ["1B"]="1" ["56B"]="56" ["57B"]="57" ["63B"]="63" ["64B"]="64" ["65B"]="65" ["100B"]="100" ["128B"]="128" ["50MB"]="50MB" )
 
 setup_file() {
     echo "And above all," > file
     echo "" > 0B
 
-    for file in ${!files[@]}; do
-        dd if=/dev/urandom of=$file bs=${files[$file]} count=1 > /dev/null 2>&1
+    for file in "${!files[@]}"; do
+        dd if=/dev/urandom of="$file" bs="${files[$file]}" count=1 > /dev/null 2>&1
     done
 }
 
@@ -20,8 +20,8 @@ teardown_file() {
     rm -f file
     rm -f 0B
 
-    for file in ${!files[@]}; do
-        rm -f $file
+    for file in "${!files[@]}"; do
+        rm -f "$file"
     done
 }
 
