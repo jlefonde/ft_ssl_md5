@@ -8,7 +8,6 @@ setup() {
 declare -A files=( ["1B"]="1" ["56B"]="56" ["57B"]="57" ["63B"]="63" ["64B"]="64" ["65B"]="65" ["100B"]="100" ["128B"]="128" ["50MB"]="50MB" )
 
 setup_file() {
-
     echo "And above all," > file
     echo "" > 0B
 
@@ -26,7 +25,7 @@ teardown_file() {
     done
 }
 
-# bats file_tags=md5:subject, subject
+# bats file_tags=md5,subject
 
 @test "echo \"42 is nice\" | ./ft_ssl md5" {
     run ./ft_ssl md5 <<< "42 is nice"
@@ -99,7 +98,7 @@ acbd18db4cc2f85cedef654fccc4a4d8
 53d53ea94217b259c11a5a2d104ec58a"
 }
 
-# bats file_tags=md5:file, md5, file, openssl
+# bats file_tags=md5,file,openssl
 
 @test "md5 0B" {
     run ./ft_ssl md5 -q 0B
@@ -146,7 +145,7 @@ acbd18db4cc2f85cedef654fccc4a4d8
     assert_output $(openssl md5 50MB | awk '{print $2}')
 }
 
-# bats file_tags=md5:stdin, md5, stdin, openssl
+# bats file_tags=md5,stdin,openssl
 
 @test "md5 <<< 0B" {
     run ./ft_ssl md5 -q <<< 0B
@@ -193,7 +192,7 @@ acbd18db4cc2f85cedef654fccc4a4d8
     assert_output $(openssl md5 <<< 50MB | awk '{print $2}')
 }
 
-# bats file_tags=sha256:subject, subject
+# bats file_tags=sha256,subject
 
 @test "echo \"42 is nice\" | ./ft_ssl sha256" {
     run ./ft_ssl sha256 <<< "42 is nice"
@@ -266,7 +265,7 @@ acbd18db4cc2f85cedef654fccc4a4d8
 53d53ea94217b259c11a5a2d104ec58a"
 }
 
-# bats file_tags=sha256:file, sha256, file, openssl
+# bats file_tags=sha256,file,openssl
 
 @test "sha256 0B" {
     run ./ft_ssl sha256 -q 0B
@@ -313,7 +312,7 @@ acbd18db4cc2f85cedef654fccc4a4d8
     assert_output $(openssl sha256 50MB | awk '{print $2}')
 }
 
-# bats file_tags=sha256:stdin, sha256, stdin, openssl
+# bats file_tags=sha256,stdin,openssl
 
 @test "sha256 <<< 0B" {
     run ./ft_ssl sha256 -q <<< 0B
@@ -360,7 +359,7 @@ acbd18db4cc2f85cedef654fccc4a4d8
     assert_output $(openssl sha256 <<< 50MB | awk '{print $2}')
 }
 
-# bats file_tags=sha256:file, sha256, file, openssl
+# bats file_tags=blake2s,file,openssl
 
 @test "blake2s 0B" {
     run ./ft_ssl blake2s -q 0B
@@ -407,7 +406,7 @@ acbd18db4cc2f85cedef654fccc4a4d8
     assert_output $(openssl blake2s-256 50MB | awk '{print $2}')
 }
 
-# bats file_tags=blake2s:stdin, blake2s, stdin, openssl
+# bats file_tags=blake2s,stdin,openssl
 
 @test "blake2s <<< 0B" {
     run ./ft_ssl blake2s -q <<< 0B
