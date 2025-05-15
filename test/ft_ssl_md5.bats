@@ -1,27 +1,29 @@
 #!/usr/bin/env bats
 
-files=("1B" "56B" "57B" "63B" "64B" "65B" "100B" "128B" "50MB")
-file_sizes=("1c" "56c" "57c" "63c" "64c" "65c" "100c" "128c" "50MB")
-
 setup() {
     load "test_helper/bats-support/load"
     load "test_helper/bats-assert/load"
+}
+
+declare -A files=( ["1B"]="1" ["56B"]="56" ["57B"]="57" ["63B"]="63" ["64B"]="64" ["65B"]="65" ["100B"]="100" ["128B"]="128" ["50MB"]="50MB" )
+
+setup_file() {
 
     echo "And above all," > file
     echo "" > 0B
 
-    for file in ${files[@]}; do
-        dd if=/dev/urandom of=$file bs=$file_sizes count=1 > /dev/null 2>&1
+    for file in ${!files[@]}; do
+        dd if=/dev/urandom of=$file bs=${files[$file]} count=1 > /dev/null 2>&1
     done
 }
 
-teardown() {
+teardown_file() {
     rm -f file
     rm -f 0B
 
-    for file in ${files[@]}; do
+    for file in ${!files[@]}; do
         rm -f $file
-    done;
+    done
 }
 
 # bats file_tags=md5:subject, subject
