@@ -8,6 +8,18 @@ BYELLOW='\033[1;33m'
 BBLUE='\033[1;34m'
 RESET='\033[0m'
 
+if [ ! -d "test/bats" ]; then
+    git clone https://github.com/bats-core/bats-core.git test/bats
+fi
+
+if [ ! -d "test/test_helper/bats-support" ]; then
+    git clone https://github.com/bats-core/bats-support.git test/test_helper/bats-support
+fi
+
+if [ ! -d "test/test_helper/bats-assert" ]; then
+    git clone https://github.com/bats-core/bats-assert.git test/test_helper/bats-assert
+fi
+
 echo -e "${BGREEN}_________________________________________________________________${RESET}"
 echo -e "${BGREEN}   ___   __                                 ___                ${RESET}"
 echo -e "${BGREEN} / ___\ /\ \__                             /\_ \               ${RESET}"
@@ -88,13 +100,13 @@ if [ ! -z $2 ]; then
     fi
 fi
 
-if [ "$2" = "--filter-tags" ]  && [ -z "$3" ]; then
+if [ "$2" = "--filter-tags" ] && [ -z "$3" ]; then
     helper_filter_tags $1
     exit 1
 fi
 
-if [ "$2" = "--filter-tags" ] && [ ! -z "$3" ]; then
-    echo -e "${BBLUE}Running tests with tag(s): "$3"${RESET}"
+if [ "$2" = "--filter-tags" ]; then
+    echo -e "${BBLUE}Running tests with tag(s): $3${RESET}"
     ./test/bats/bin/bats $project_test_file --filter-tags "$3"
 else
     ./test/bats/bin/bats $project_test_file
