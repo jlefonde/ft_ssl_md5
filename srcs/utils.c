@@ -6,7 +6,7 @@ void free_input(void *content)
 
     if (input->str)
         free(input->str);
-    if (input->type == INPUT_FILE)
+    if (input->type == INPUT_FILE && input->fd != -1)
         close(input->fd);
     free(input);
 }
