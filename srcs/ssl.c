@@ -55,7 +55,22 @@ int main(int argc, char **argv)
         return (1);
     }
 
-    cmd->process_func(cmd, argc, argv);
+    uint8_t block[64];
+    ssize_t bytes_read = 0;
+    int i = 0;
+    while ((bytes_read = read(STDIN_FILENO, block, 64)) >= 0)
+    {
+        printf("[%d, %lu] %s\n", i++, bytes_read, block);
+
+        if (!bytes_read)
+        {
+            printf("final\n");
+            exit(1);
+        }
+        ft_memset(block, 0x00, 64);
+    }
+
+    // cmd->process_func(cmd, argc, argv);
 
     return (0);
 }

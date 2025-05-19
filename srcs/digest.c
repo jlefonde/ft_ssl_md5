@@ -57,27 +57,6 @@ static void handle_stdin_input(const t_command *cmd, int argc, t_context *ctx, b
         input->str = NULL;
         input->str_pos = 0;
 
-        ssize_t bytes_read = 0;
-        char buffer[1024];
-        while ((bytes_read = read(input->fd, buffer, 1024)) > 0)
-        {
-            buffer[bytes_read] = 0;
-            if (!input->str)
-                input->str = ft_strdup(buffer);
-            else
-            {
-                char *joined = ft_strjoin(input->str, buffer);
-                free(input->str);
-                input->str = joined;
-            }
-        }
-
-        if (bytes_read == -1)
-        {
-            free(input);
-            fatal_error(ctx, cmd->name, strerror(errno), NULL);
-        }
-
         ft_lstadd_front(&ctx->digest.inputs, ft_lstnew(input));
     }
 }

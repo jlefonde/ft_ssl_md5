@@ -37,7 +37,7 @@ void print_error(const char *s1, const char *s2, const char *s3)
 
 ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
 {
-    if (input->type == INPUT_STR || input->type == INPUT_STDIN)
+    if (input->type == INPUT_STR)
     {
         if (!input->str)
             return (0);
@@ -50,6 +50,25 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
         input->str_pos += to_copy;
 
         return (to_copy);
+    }
+    else if (input->type == INPUT_STDIN)
+    {
+        // ssize_t bytes_read = 0;
+        // ssize_t total_bytes_read = 0;
+        // int i = 0;
+        // while ((bytes_read = read(STDIN_FILENO, buffer, 64)) > 0)
+        // {
+        //     printf("[%d, %lu] %s\n", i++, bytes_read, (char *)buffer);
+
+        //     if (!bytes_read)
+        //     {
+        //         printf("final\n");
+        //         exit(1);
+        //     }
+        //     ft_memset(buffer, 0x00, 64);
+        // }
+        // ft_fprintf(2, "STDIN\n");
+        return 0;
     }
     return (read(input->fd, buffer, nbytes));
 }
