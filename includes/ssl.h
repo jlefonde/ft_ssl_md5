@@ -14,6 +14,7 @@
 # include "md5.h"
 # include "sha256.h"
 # include "blake2s.h"
+# include "blake2b.h"
 
 typedef enum e_category_type
 {
