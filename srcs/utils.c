@@ -53,22 +53,21 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
     }
     else if (input->type == INPUT_STDIN)
     {
-        // ssize_t bytes_read = 0;
-        // ssize_t total_bytes_read = 0;
-        // int i = 0;
-        // while ((bytes_read = read(STDIN_FILENO, buffer, 64)) > 0)
-        // {
-        //     printf("[%d, %lu] %s\n", i++, bytes_read, (char *)buffer);
+        uint8_t stdin_buffer[64];
+        size_t buffer_size = 64;
+        ssize_t bytes_read = 0;
+        ssize_t total_bytes_read = 0;
 
-        //     if (!bytes_read)
-        //     {
-        //         printf("final\n");
-        //         exit(1);
-        //     }
-        //     ft_memset(buffer, 0x00, 64);
-        // }
-        // ft_fprintf(2, "STDIN\n");
-        return 0;
+        while ((bytes_read = read(input->fd, stdin_buffer, buffer_size)) > 0)
+        {
+            stdin_buffer[bytes_read] = 0;
+            total_bytes_read += bytes_read;
+            
+            ft_memcpy(buffer + (64 - buffer_size), stdin_buffer, bytes_read + 1);
+            buffer_size -= bytes_read;
+        }
+        if (total_bytes_read)
+            return (total_bytes_read);
     }
     return (read(input->fd, buffer, nbytes));
 }
