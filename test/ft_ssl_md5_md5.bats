@@ -38,7 +38,7 @@ teardown_file() {
 
 @test "md5 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -49,7 +49,7 @@ teardown_file() {
 
 @test "md5 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -60,7 +60,7 @@ teardown_file() {
 
 @test "md5 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -71,7 +71,7 @@ teardown_file() {
 
 @test "md5 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -82,7 +82,7 @@ teardown_file() {
 
 @test "md5 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -93,7 +93,7 @@ teardown_file() {
 
 @test "md5 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -104,7 +104,7 @@ teardown_file() {
 
 @test "md5 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -115,7 +115,7 @@ teardown_file() {
 
 @test "md5 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -126,7 +126,7 @@ teardown_file() {
 
 @test "md5 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -139,7 +139,7 @@ teardown_file() {
 
 @test "md5 < 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -150,7 +150,7 @@ teardown_file() {
 
 @test "md5 < 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -161,7 +161,7 @@ teardown_file() {
 
 @test "md5 < 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -172,7 +172,7 @@ teardown_file() {
 
 @test "md5 < 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -183,7 +183,7 @@ teardown_file() {
 
 @test "md5 < 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -194,7 +194,7 @@ teardown_file() {
 
 @test "md5 < 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -205,7 +205,7 @@ teardown_file() {
 
 @test "md5 < 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -216,7 +216,7 @@ teardown_file() {
 
 @test "md5 < 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -227,7 +227,7 @@ teardown_file() {
 
 @test "md5 < 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl md5 -q < 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl md5 -q < 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -239,7 +239,7 @@ teardown_file() {
 
 @test "blake2s 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -250,7 +250,7 @@ teardown_file() {
 
 @test "blake2s 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -261,7 +261,7 @@ teardown_file() {
 
 @test "blake2s 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -272,7 +272,7 @@ teardown_file() {
 
 @test "blake2s 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -283,7 +283,7 @@ teardown_file() {
 
 @test "blake2s 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -294,7 +294,7 @@ teardown_file() {
 
 @test "blake2s 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -305,7 +305,7 @@ teardown_file() {
 
 @test "blake2s 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -316,7 +316,7 @@ teardown_file() {
 
 @test "blake2s 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -327,7 +327,7 @@ teardown_file() {
 
 @test "blake2s 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -340,7 +340,7 @@ teardown_file() {
 
 @test "blake2s < 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -351,7 +351,7 @@ teardown_file() {
 
 @test "blake2s < 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -362,7 +362,7 @@ teardown_file() {
 
 @test "blake2s < 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -373,7 +373,7 @@ teardown_file() {
 
 @test "blake2s < 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -384,7 +384,7 @@ teardown_file() {
 
 @test "blake2s < 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -395,7 +395,7 @@ teardown_file() {
 
 @test "blake2s < 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -406,7 +406,7 @@ teardown_file() {
 
 @test "blake2s < 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -417,7 +417,7 @@ teardown_file() {
 
 @test "blake2s < 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -428,7 +428,7 @@ teardown_file() {
 
 @test "blake2s < 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2s -q < 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2s -q < 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -440,7 +440,7 @@ teardown_file() {
 
 @test "sha256 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -451,7 +451,7 @@ teardown_file() {
 
 @test "sha256 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -462,7 +462,7 @@ teardown_file() {
 
 @test "sha256 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -473,7 +473,7 @@ teardown_file() {
 
 @test "sha256 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -484,7 +484,7 @@ teardown_file() {
 
 @test "sha256 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -495,7 +495,7 @@ teardown_file() {
 
 @test "sha256 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -506,7 +506,7 @@ teardown_file() {
 
 @test "sha256 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -517,7 +517,7 @@ teardown_file() {
 
 @test "sha256 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -528,7 +528,7 @@ teardown_file() {
 
 @test "sha256 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -541,7 +541,7 @@ teardown_file() {
 
 @test "sha256 < 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -552,7 +552,7 @@ teardown_file() {
 
 @test "sha256 < 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -563,7 +563,7 @@ teardown_file() {
 
 @test "sha256 < 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -574,7 +574,7 @@ teardown_file() {
 
 @test "sha256 < 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -585,7 +585,7 @@ teardown_file() {
 
 @test "sha256 < 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -596,7 +596,7 @@ teardown_file() {
 
 @test "sha256 < 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -607,7 +607,7 @@ teardown_file() {
 
 @test "sha256 < 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -618,7 +618,7 @@ teardown_file() {
 
 @test "sha256 < 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -629,7 +629,7 @@ teardown_file() {
 
 @test "sha256 < 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl sha256 -q < 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl sha256 -q < 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -641,7 +641,7 @@ teardown_file() {
 
 @test "blake2b 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -652,7 +652,7 @@ teardown_file() {
 
 @test "blake2b 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -663,7 +663,7 @@ teardown_file() {
 
 @test "blake2b 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -674,7 +674,7 @@ teardown_file() {
 
 @test "blake2b 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -685,7 +685,7 @@ teardown_file() {
 
 @test "blake2b 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -696,7 +696,7 @@ teardown_file() {
 
 @test "blake2b 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -707,7 +707,7 @@ teardown_file() {
 
 @test "blake2b 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -718,7 +718,7 @@ teardown_file() {
 
 @test "blake2b 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -729,7 +729,7 @@ teardown_file() {
 
 @test "blake2b 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -742,7 +742,7 @@ teardown_file() {
 
 @test "blake2b < 65B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 65B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 65B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -753,7 +753,7 @@ teardown_file() {
 
 @test "blake2b < 56B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 56B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 56B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -764,7 +764,7 @@ teardown_file() {
 
 @test "blake2b < 64B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 64B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 64B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -775,7 +775,7 @@ teardown_file() {
 
 @test "blake2b < 128B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 128B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 128B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -786,7 +786,7 @@ teardown_file() {
 
 @test "blake2b < 63B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 63B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 63B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -797,7 +797,7 @@ teardown_file() {
 
 @test "blake2b < 100B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 100B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 100B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -808,7 +808,7 @@ teardown_file() {
 
 @test "blake2b < 10MB" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 10MB
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 10MB
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -819,7 +819,7 @@ teardown_file() {
 
 @test "blake2b < 1B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 1B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 1B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
@@ -830,7 +830,7 @@ teardown_file() {
 
 @test "blake2b < 57B" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl blake2b -q < 57B
+    run valgrind --log-file="$valgrind_log" ../ft_ssl blake2b -q < 57B
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"

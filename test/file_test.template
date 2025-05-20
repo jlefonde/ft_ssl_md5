@@ -1,6 +1,6 @@
 @test "$CMD $FILE" {
     local valgrind_log=$(mktemp)
-    run valgrind --log-file="$valgrind_log" ./ft_ssl $CMD -q $FILE
+    run valgrind --log-file="$valgrind_log" ../ft_ssl $CMD -q $FILE
     grep -q "All heap blocks were freed -- no leaks are possible" "$valgrind_log"
     assert_success
     grep -q "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_log"
