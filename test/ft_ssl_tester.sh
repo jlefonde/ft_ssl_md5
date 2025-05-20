@@ -8,6 +8,8 @@ BYELLOW='\033[1;33m'
 BBLUE='\033[1;34m'
 RESET='\033[0m'
 
+./ft_ssl_md5/ft_ssl_md5.sh
+
 if [ ! -d "bats" ]; then
     git clone https://github.com/bats-core/bats-core.git bats
 fi
