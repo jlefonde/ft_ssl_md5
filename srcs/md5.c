@@ -182,10 +182,6 @@ static void *md5(t_input *input)
             md5_final(block, bytes_read, total_msg_size * 8, digest);
             break ;
         }
-        // for (int i = 0; i < 4; ++i)
-        //     for (int j = 0; j < 4; ++j)
-        //         ft_printf("%02x", ((digest[i] >> (j * 8)) & 0xFF));
-        // ft_printf("\n");
     }
 
     if (bytes_read == -1)

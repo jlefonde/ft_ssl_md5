@@ -55,7 +55,7 @@ static void handle_stdin_input(const t_command *cmd, int argc, t_context *ctx, b
         input->type = INPUT_STDIN;
         input->fd = STDIN_FILENO;
         input->str = NULL;
-        input->str_pos = 0;
+        input->str_pos = ctx->digest.stdin_mode ? 0 : -1;
 
         ft_lstadd_front(&ctx->digest.inputs, ft_lstnew(input));
     }

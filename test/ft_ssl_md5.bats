@@ -20,9 +20,9 @@ teardown_file() {
     rm -f file
     rm -f 0B
 
-    # for file in "${!files[@]}"; do
-    #     rm -f "$file"
-    # done
+    for file in "${!files[@]}"; do
+        rm -f "$file"
+    done
 }
 
 # bats file_tags=md5,subject

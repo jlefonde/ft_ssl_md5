@@ -53,8 +53,11 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
     }
     else if (input->type == INPUT_STDIN)
     {
-        uint8_t stdin_buffer[64];
-        size_t buffer_size = 64;
+        uint8_t *stdin_buffer = (uint8_t *)malloc(nbytes + 1);
+        if (!stdin_buffer)
+            return (-1);
+
+        size_t buffer_size = nbytes;
         ssize_t bytes_read = 0;
         ssize_t total_bytes_read = 0;
 
@@ -62,10 +65,22 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
         {
             stdin_buffer[bytes_read] = 0;
             total_bytes_read += bytes_read;
-            
-            ft_memcpy(buffer + (64 - buffer_size), stdin_buffer, bytes_read + 1);
+
+            ft_memcpy(buffer + (nbytes - buffer_size), stdin_buffer, bytes_read + 1);
+            if (input->str_pos == 0)
+            {
+                if (!input->str)
+                    input->str = ft_strdup(buffer);
+                else
+                {
+                    char *joined = ft_strjoin(input->str, buffer);
+                    free(input->str);
+                    input->str = joined;
+                }
+            }
             buffer_size -= bytes_read;
         }
+        free(stdin_buffer);
         if (total_bytes_read)
             return (total_bytes_read);
     }
