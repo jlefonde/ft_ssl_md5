@@ -9,6 +9,7 @@ SOURCES = ssl.c \
             digest.c \
 			md5.c \
 			sha256.c \
+			blake2.c \
 			blake2s.c \
 			blake2b.c
 
