@@ -1,11 +1,11 @@
 #!/usr/bin/env bats
 
+declare -gA files=( ["1B"]="1" ["56B"]="56" ["57B"]="57" ["63B"]="63" ["64B"]="64" ["65B"]="65" ["100B"]="100" ["128B"]="128" ["50MB"]="50MB" )
+
 setup() {
     load "test_helper/bats-support/load"
     load "test_helper/bats-assert/load"
 }
-
-declare -gA files=( ["1B"]="1" ["56B"]="56" ["57B"]="57" ["63B"]="63" ["64B"]="64" ["65B"]="65" ["100B"]="100" ["128B"]="128" ["50MB"]="50MB" )
 
 setup_file() {
     echo "And above all," > file
