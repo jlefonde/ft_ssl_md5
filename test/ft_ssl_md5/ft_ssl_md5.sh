@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -gA files=( ["1B"]="1" ["56B"]="56" ["57B"]="57" ["63B"]="63" ["64B"]="64" ["65B"]="65" ["100B"]="100" ["128B"]="128" ["10MB"]="10MB" )
+declare -g files=( "0B" "1B" "56B" "57B" "63B" "64B" "65B" "100B" "128B" "10MB" )
 
 declare -gA commands=( ["md5"]="md5" ["sha256"]="sha256" ["blake2s"]="blake2s256" ["blake2b"]="blake2b512" )
 
@@ -9,10 +9,11 @@ declare -gA commands=( ["md5"]="md5" ["sha256"]="sha256" ["blake2s"]="blake2s256
 cat ./ft_ssl_md5/setup.bats >> ./ft_ssl_md5/ft_ssl_md5.bats
 echo >> ./ft_ssl_md5/ft_ssl_md5.bats
 
-echo "declare -gA files" >> ./ft_ssl_md5/ft_ssl_md5.bats
-for file in "${!files[@]}"; do
-    echo "files[\"$file\"]=\"${files[$file]}\"" >> ./ft_ssl_md5/ft_ssl_md5.bats
+echo -n "declare -g files=( " >> ./ft_ssl_md5/ft_ssl_md5.bats
+for file in "${files[@]}"; do
+    echo -n "\"$file\" " >> ./ft_ssl_md5/ft_ssl_md5.bats
 done
+echo ")" >> ./ft_ssl_md5/ft_ssl_md5.bats
 echo >> ./ft_ssl_md5/ft_ssl_md5.bats
 
 for command in "${!commands[@]}"; do
@@ -25,7 +26,7 @@ for command in "${!commands[@]}"; do
     echo >> ./ft_ssl_md5/ft_ssl_md5.bats
 
     echo "# bats file_tags=$command,file,openssl" >> ./ft_ssl_md5/ft_ssl_md5.bats
-    for file in "${!files[@]}"; do
+    for file in "${files[@]}"; do
         echo >> ./ft_ssl_md5/ft_ssl_md5.bats
         export CMD="$command"
         export OPENSSL_CMD="${commands[$command]}"
@@ -35,7 +36,7 @@ for command in "${!commands[@]}"; do
     done
     echo >> ./ft_ssl_md5/ft_ssl_md5.bats
     echo "# bats file_tags=$command,stdin,openssl" >> ./ft_ssl_md5/ft_ssl_md5.bats
-    for file in "${!files[@]}"; do
+    for file in "${files[@]}"; do
         echo >> ./ft_ssl_md5/ft_ssl_md5.bats
         export CMD="$command"
         export OPENSSL_CMD="${commands[$command]}"
