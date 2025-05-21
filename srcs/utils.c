@@ -63,6 +63,7 @@ ssize_t read_from_input(t_input *input, void* buffer, size_t nbytes)
                 break;
             if (input->str_pos == 0)
             {
+                ((char *)buffer)[bytes_read] = 0;
                 if (!input->str)
                     input->str = ft_strdup(buffer);
                 else
