@@ -56,16 +56,9 @@ static void process_block(const uint8_t block[128], uint64_t total_bytes_read, u
 
     for (int i = 0; i < 16; ++i)
     {
-        int j = i * 8;
-
-        w[i] = (uint64_t)block[j]
-             | ((uint64_t)block[j + 1] << 8)
-             | ((uint64_t)block[j + 2] << 16)
-             | ((uint64_t)block[j + 3] << 24)
-             | ((uint64_t)block[j + 4] << 32)
-             | ((uint64_t)block[j + 5] << 40)
-             | ((uint64_t)block[j + 6] << 48)
-             | ((uint64_t)block[j + 7] << 56);
+        w[i] = 0;
+        for (int j = 0, k = i * 8; j < 8; j++)
+            w[i] |= ((uint64_t)block[k + j] << (j * 8));
     }
 
     F(w, digest, total_bytes_read, final);
